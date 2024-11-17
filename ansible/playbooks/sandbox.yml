@@ -1,0 +1,18 @@
+
+- name: Create Single-Node OpenShift UTM VM
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+  - name: Create UTM VM
+    ansible.builtin.include_role:
+      name: utm_create
+    vars:
+      utm_clean_vm: true
+      utm_vm_name: sno-csb-arm2
+      utm_vm_cores: 8
+      utm_vm_memory: 8182
+      utm_boot_iso: /Users/jowest/dev/archives/ocp/disc.iso
+      utm_icon: icon-microshift.ico
+      utm_icon_custom: true
+      utm_qemu_debug_log: true

@@ -1,0 +1,36 @@
+---
+
+# consider adding backup of existing VM 
+
+- name: Check if UTM directory exists 
+  ansible.builtin.stat:
+    path: "{{ clean_utm_vm_dir }}"
+  register: utm_dir_status
+
+- name: Assert that the directory does not exist
+  when: not utm_clean_vm
+  ansible.builtin.assert:
+    that:
+    - not utm_dir_status.stat.exists
+    fail_msg: "'{{ clean_utm_vm_name }}' already exists and clean is set to false. Aborting."
+    success_msg: "'{{ clean_utm_vm_name }}' does not exist. Proceeding."
+
+- name: Delete the VM
+  when: utm_dir_status.stat.exists
+  ansible.builtin.shell: |
+    osascript -e 'tell application "UTM"
+      try
+        set vm to virtual machine named "{{ clean_utm_vm_name }}"
+        if status of vm is started then stop vm by force
+        if vm exists then delete virtual machine named "{{ clean_utm_vm_name }}"
+      on error
+        return "VM {{ clean_utm_vm_name }} did not exist" 
+      end try
+    end tell'
+
+- name: Delete the directory if it still exists
+  when: utm_dir_status.stat.exists
+  ansible.builtin.file:
+    path: "{{ clean_utm_vm_dir }}"
+    state: absent
+

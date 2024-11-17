@@ -1,0 +1,11 @@
+
+# ansible
+collections
+
+# secrets
+*-secrets
+
+# vscode
+*.code-workspace
+.vscode
+

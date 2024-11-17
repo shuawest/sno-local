@@ -1,0 +1,22 @@
+---
+
+- name: Get VM status
+  ansible.builtin.include_role:
+    name: utm_create
+    tasks_from: info.yml
+
+- name: Delete the VM
+  when: utm_vm_exists and utm_vm_started
+  ansible.builtin.shell: |
+    osascript -e 'tell application "UTM"
+      try
+        set vm to virtual machine named "{{ utm_vm_name }}"
+        if status of vm is started then stop vm by force
+      on error
+        return "already stopped" 
+      end try
+    end tell'
+
+- name: Set VM status fact
+  set_fact: 
+    utm_vm_started: false 

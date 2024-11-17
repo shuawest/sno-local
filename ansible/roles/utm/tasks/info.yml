@@ -1,0 +1,64 @@
+---
+
+- name: Check if UTM directory exists 
+  ansible.builtin.stat:
+    path: "{{ utm_vm_dir }}"
+  register: utm_dir_status
+
+- name: Set VM status fact
+  when: not utm_dir_status.stat.exists
+  set_fact: 
+    utm_vm_dir_exists: false
+    utm_vm_started: false 
+    utm_vm_exists: false  
+    utm_vm_ip_addr: unknown  
+
+- name: UTM VM Status
+  when: utm_dir_status.stat.exists
+  ansible.builtin.shell: |
+    osascript -e 'tell application "UTM"
+      try
+        set vm to virtual machine named "{{ utm_vm_name }}"
+        get status of vm
+      on error
+        return "absent" 
+      end try
+    end tell'
+  register: utm_vm_status_output
+
+- name: Set VM status fact
+  when: utm_dir_status.stat.exists
+  set_fact: 
+    utm_vm_dir_exists: "{{ utm_dir_status.stat.exists }}"
+    utm_vm_started: "{{ 'started' in utm_vm_status_output.stdout | default(false) }}" 
+    utm_vm_exists: "{{ 'absent' not in utm_vm_status_output.stdout }}"  
+
+- name: Get IP Address of VM if started
+  when: utm_vm_started 
+  ansible.builtin.shell: |
+    osascript -e 'tell application "UTM"
+        set vm to virtual machine named "{{ utm_vm_name }}"
+        --- get IP address (QEMU Guest Agent must be installed) of first interface
+        get item 1 of (query ip of vm) 
+    end tell'
+  register: utm_vm_ip_addr_output
+
+- name: Get IP Address of VM if started
+  when: utm_vm_started
+  set_fact: 
+    utm_vm_ip_addr: "{{ utm_vm_ip_addr_output.stdout}}"
+
+- name: Get IP Address of VM if started
+  when: not utm_vm_started
+  set_fact: 
+    utm_vm_ip_addr: "unknown"
+
+- name: Show VM info
+  debug: 
+    msg: 
+    - "utm_vm_dir_exists: {{ utm_vm_dir_exists}}"
+    - "utm_vm_exists: {{ utm_vm_exists }}"
+    - "utm_vm_started: {{ utm_vm_started }}"
+    - "ip_address: {{ utm_vm_ip_addr }}"
+
+

@@ -1,0 +1,14 @@
+---
+
+# Update collections
+#   ansible-galaxy collection install -r requirements.yaml
+
+collections:
+- community.general
+- community.network
+- ansible.netcommon
+- community.aws
+
+
+
+

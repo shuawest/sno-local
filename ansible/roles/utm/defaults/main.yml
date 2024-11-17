@@ -1,0 +1,62 @@
+---
+
+# delete vm if it already exists
+utm_clean_vm: false
+utm_start_seconds: 15
+
+utm_vm_name: sample
+utm_vm_cores: 6
+utm_vm_memory: 4096
+utm_disk_primary_size_gb: 100
+utm_disk_secondary_size_gb: 200
+utm_boot_iso: 
+
+# status
+utm_vm_dir_exists: false
+utm_vm_started: false 
+utm_vm_exists: false 
+utm_vm_ip_addr: unknown
+
+# inferred 
+utmctl: /Applications/UTM.app/Contents/MacOS/utmctl
+utm_base_dir: "{{ lookup('env', 'HOME') }}/Library/Containers/com.utmapp.UTM/Data/Documents"
+utm_vm_dir: "{{ utm_base_dir }}/{{ utm_vm_name }}.utm"
+
+utm_vm_tmpl_name: "{{ utm_vm_name }}-tmpl"
+utm_vm_tmpl_dir: "{{ utm_base_dir }}/{{ utm_vm_tmpl_name }}.utm"
+
+
+# defaults for Apple Silicon qemu vm
+utm_backend: QEMU
+utm_vm_arch: aarch64   # aarch64 | x86_64
+utm_qemu_debug_log: false
+utm_qemu_rtc_local_time: false
+utm_vm_uefi_boot: true
+utm_vm_balloon_device: false
+utm_vm_rng_device: true
+utm_vm_cpu: default
+utm_vm_force_multicore: false
+
+utm_net_mode: Shared
+utm_net_isolate: false
+
+# default icon
+utm_icon: linux
+utm_icon_custom: false
+
+# example: custom icon - place ico in <vm>.utm/Data/ directory
+#utm_icon: icon-k8s.ico | icon-microservice.ico | icon-microshift.ico | icon-ocp.ico | icon-redhat.ico | icon-rhlayers.ico
+#utm_icon_custom: true
+
+utm_clipboard_sharing: false
+utm_dir_share_mode: VirtFS
+utm_dir_share_readonly: false
+
+# generate mac address
+utm_vm_mac_address: "{{ '52:54:00' | community.general.random_mac }}"
+
+# generate UUIDs
+utm_vm_uuid: "{{ 9999999999999999999999 | random | to_uuid | upper }}"
+utm_iso_guid: "{{ 9999999999999999999999 | random | to_uuid | upper }}"
+utm_disk_primary_guid: "{{ 9999999999999999999999 | random | to_uuid | upper }}"
+utm_disk_secondary_guid: "{{ 9999999999999999999999 | random | to_uuid | upper }}"

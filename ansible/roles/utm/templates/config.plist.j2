@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Backend</key>
+	<string>{{ utm_backend }}</string>
+	<key>ConfigurationVersion</key>
+	<integer>4</integer>
+	<key>Display</key>
+	<array>
+		<dict>
+			<key>DownscalingFilter</key>
+			<string>Linear</string>
+			<key>DynamicResolution</key>
+			<true/>
+			<key>Hardware</key>
+			<string>virtio-gpu-pci</string>
+			<key>NativeResolution</key>
+			<false/>
+			<key>UpscalingFilter</key>
+			<string>Nearest</string>
+		</dict>
+	</array>
+	<key>Drive</key>
+	<array>
+		<dict>
+			<key>Identifier</key>
+			<string>{{ utm_iso_guid }}</string>
+			<key>ImageType</key>
+			<string>CD</string>
+			<key>Interface</key>
+			<string>USB</string>
+			<key>InterfaceVersion</key>
+			<integer>1</integer>
+			<key>ReadOnly</key>
+			<true/>
+		</dict>
+	</array>
+	<key>Information</key>
+	<dict>
+		<key>Icon</key>
+		<string>{{ utm_icon }}</string>
+		<key>IconCustom</key>
+		<{{ utm_icon_custom | lower }}/>
+		<key>Name</key>
+		<string>{{ j2_utm_vm_name }}</string>
+		<key>UUID</key>
+		<string>{{ utm_vm_uuid }}</string>
+	</dict>
+	<key>Input</key>
+	<dict>
+		<key>MaximumUsbShare</key>
+		<integer>3</integer>
+		<key>UsbBusSupport</key>
+		<string>3.0</string>
+		<key>UsbSharing</key>
+		<false/>
+	</dict>
+	<key>Network</key>
+	<array>
+		<dict>
+			<key>Hardware</key>
+			<string>virtio-net-pci</string>
+			<key>IsolateFromHost</key>
+			<{{ utm_net_isolate | lower }}/>
+			<key>MacAddress</key>
+			<string>{{ utm_vm_mac_address }}</string>
+			<key>Mode</key>
+			<string>{{ utm_net_mode }}</string>
+			<key>PortForward</key>
+			<array/>
+		</dict>
+	</array>
+	<key>QEMU</key>
+	<dict>
+		<key>AdditionalArguments</key>
+		<array/>
+		<key>BalloonDevice</key>
+		<{{ utm_vm_balloon_device | lower }}/>
+		<key>DebugLog</key>
+		<{{ utm_qemu_debug_log | lower }}/>
+		<key>Hypervisor</key>
+		<true/>
+		<key>PS2Controller</key>
+		<false/>
+		<key>RNGDevice</key>
+		<{{ utm_vm_rng_device | lower }}/>
+		<key>RTCLocalTime</key>
+		<{{ utm_qemu_rtc_local_time | lower }}/>
+		<key>TPMDevice</key>
+		<false/>
+		<key>TSO</key>
+		<false/>
+		<key>UEFIBoot</key>
+		<{{ utm_vm_uefi_boot | lower }}/>
+	</dict>
+	<key>Serial</key>
+	<array/>
+	<key>Sharing</key>
+	<dict>
+		<key>ClipboardSharing</key>
+		<{{ utm_clipboard_sharing | lower }}/>
+		<key>DirectoryShareMode</key>
+		<string>{{ utm_dir_share_mode }}</string>
+		<key>DirectoryShareReadOnly</key>
+		<{{ utm_dir_share_readonly | lower }}/>
+	</dict>
+	<key>Sound</key>
+	<array>
+		<dict>
+			<key>Hardware</key>
+			<string>intel-hda</string>
+		</dict>
+	</array>
+	<key>System</key>
+	<dict>
+		<key>Architecture</key>
+		<string>{{ utm_vm_arch }}</string>
+		<key>CPU</key>
+		<string>{{ utm_vm_cpu }}</string>
+		<key>CPUCount</key>
+		<integer>{{ utm_vm_cores }}</integer>
+		<key>CPUFlagsAdd</key>
+		<array/>
+		<key>CPUFlagsRemove</key>
+		<array/>
+		<key>ForceMulticore</key>
+		<{{ utm_vm_force_multicore | lower }}/>
+		<key>JITCacheSize</key>
+		<integer>0</integer>
+		<key>MemorySize</key>
+		<integer>{{ utm_vm_memory | lower }}</integer>
+		<key>Target</key>
+		<string>virt</string>
+	</dict>
+</dict>
+</plist>

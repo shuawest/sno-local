@@ -1,0 +1,30 @@
+---
+
+- name: Get VM status
+  ansible.builtin.include_role:
+    name: utm_create
+    tasks_from: info.yml
+
+- name: Start the VM and wait for it to start
+  when: utm_vm_exists and not utm_vm_started
+  ansible.builtin.shell: |
+    osascript -e 'tell application "UTM"
+      try
+        set vm to virtual machine named "{{ utm_vm_name }}"
+        start vm
+        repeat
+          if status of vm is started then exit repeat
+        end repeat
+      on error
+        return "failed to start" 
+      end try
+    end tell'
+
+- pause:
+    seconds: "{{ utm_start_seconds }}"
+
+- name: Get VM new status
+  ansible.builtin.include_role:
+    name: utm_create
+    tasks_from: info.yml
+

@@ -1,0 +1,103 @@
+---
+
+# UTM allows for VM control through Apple Script, but not all VM
+# settings can be controlled through the script and vice versa.
+# So a template VM is generated from as a source to be cloned then
+# the template VM is removed.
+
+###
+# clean prior VMs
+
+- name: Clean the VM if it exists
+  ansible.builtin.include_role:
+    name: utm_create
+    tasks_from: clean_vm.yml
+  vars:
+    clean_utm_vm_name: "{{ utm_vm_name }}"
+    clean_utm_vm_dir: "{{ utm_vm_dir }}"
+
+- name: Clean the template VM if it exists
+  ansible.builtin.include_role:
+    name: utm_create
+    tasks_from: clean_vm.yml
+  vars:
+    utm_clean_vm: true
+    clean_utm_vm_name: "{{ utm_vm_tmpl_name }}"
+    clean_utm_vm_dir: "{{ utm_vm_tmpl_dir }}"
+
+###
+# create the template 
+
+- name: Prep the template VM
+  ansible.builtin.include_role:
+    name: utm_create
+    tasks_from: prep_vm.yml
+  vars:
+    prep_utm_vm_name: "{{ utm_vm_tmpl_name }}"
+    prep_utm_vm_dir: "{{ utm_vm_tmpl_dir }}"
+
+- name: Generate template config.plist
+  ansible.builtin.template:
+    src: templates/config.plist.j2
+    dest: "{{ utm_vm_tmpl_dir }}/config.plist"
+    mode: '0644'
+  vars:
+    j2_utm_vm_name: "{{ utm_vm_tmpl_name }}"
+    j2_utm_vm_dir: "{{ utm_vm_tmpl_dir }}"
+
+- name: Load VM template into UTM
+  ansible.builtin.shell: |
+    open '{{ utm_vm_tmpl_dir }}'
+
+###
+# clone the template, and set drives
+
+- name: Create the VM from the template
+  ansible.builtin.shell: |
+    osascript -e 'tell application "UTM"
+      set tmpl to virtual machine named "{{ utm_vm_tmpl_name }}"
+      set iso to POSIX file "{{ utm_boot_iso }}"
+      duplicate tmpl with properties { ¬
+        configuration: { ¬
+          name:"{{ utm_vm_name }}", ¬ 
+          drives: { ¬ 
+            { guest size: {{ utm_disk_primary_size_gb * 1024 }} }, ¬ 
+            { guest size: {{ utm_disk_secondary_size_gb * 1024 }} }, ¬ 
+            { removable: true, source:iso, guest size:65536 } ¬ 
+          } ¬ 
+        } ¬ 
+      }
+    end tell'
+
+- name: Set ISO file for VM
+  ansible.builtin.shell: |
+    osascript -e 'tell application "UTM"
+      set iso to POSIX file "{{ utm_boot_iso }}"
+      set vm to virtual machine named "{{ utm_vm_name }}"
+      set config to configuration of vm
+      set i to id of item 3 of drives of config
+      set item 3 of drives of config to { removable: true, source:iso, guest size:65536 }
+      update configuration of vm with config
+    end tell'
+
+
+###
+# clean up the template
+
+- name: Clean the template VM 
+  ansible.builtin.include_role:
+    name: utm_create
+    tasks_from: clean_vm.yml
+  vars:
+    utm_clean_vm: true
+    clean_utm_vm_name: "{{ utm_vm_tmpl_name }}"
+    clean_utm_vm_dir: "{{ utm_vm_tmpl_dir }}"
+
+
+
+
+
+
+
+
+

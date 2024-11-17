@@ -1,0 +1,17 @@
+---
+
+
+- name: Create Single-Node OpenShift UTM VM
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+  - name: Create UTM VM
+    ansible.builtin.include_role:
+      name: utm_create
+      tasks_from: stop_vm.yml
+    vars:
+      utm_vm_name: sno-csb-arm
+
+
+
