@@ -1,0 +1,58 @@
+
+- name: Delete IAM user 
+  ignore_errors: true
+  community.aws.iam_user:
+    aws_access_key: "{{ route53_owner_access_key }}"
+    aws_secret_key: "{{ route53_owner_secret }}"
+    name: "{{ route53_subdomain_user }}"
+    state: absent
+
+- name: Delete DNS IAM policy 
+  ignore_errors: true
+  community.aws.iam_policy:
+    aws_access_key: "{{ route53_owner_access_key }}"
+    aws_secret_key: "{{ route53_owner_secret }}"
+    iam_type: group
+    iam_name: "{{ route53_subdomain_group }}"
+    policy_name: "{{ route53_subdomain_policy_name }}"
+    state: absent
+
+- name: Delete hostedzones IAM policy 
+  ignore_errors: true
+  community.aws.iam_policy:
+    aws_access_key: "{{ route53_owner_access_key }}"
+    aws_secret_key: "{{ route53_owner_secret }}"
+    iam_type: group
+    iam_name: "{{ route53_subdomain_group }}"
+    policy_name: "{{ route53_hostedzones_policy_name }}"
+    state: absent
+
+- name: Delete allzones IAM policy
+  ignore_errors: true  
+  community.aws.iam_policy:
+    aws_access_key: "{{ route53_owner_access_key }}"
+    aws_secret_key: "{{ route53_owner_secret }}"
+    iam_type: group
+    iam_name: "{{ route53_subdomain_group }}"
+    policy_name: "{{ route53_allzones_policy_name }}"
+    state: absent
+
+- name: Delete certmanager trust IAM policy
+  ignore_errors: true  
+  community.aws.iam_policy:
+    aws_access_key: "{{ route53_owner_access_key }}"
+    aws_secret_key: "{{ route53_owner_secret }}"
+    iam_type: group
+    iam_name: "{{ route53_subdomain_group }}"
+    policy_name: "{{ route53_certmanager_trust_policy_name }}"
+    state: absent
+
+- name: Delete Route53 subdomain IAM group with the user as a member
+  ignore_errors: true
+  community.aws.iam_group:
+    aws_access_key: "{{ route53_owner_access_key }}"
+    aws_secret_key: "{{ route53_owner_secret }}"
+    name: "{{ route53_subdomain_group }}"
+    users: 
+    - "{{ route53_subdomain_user }}"
+    state: absent

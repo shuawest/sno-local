@@ -1,2 +1,16 @@
 ---
 
+# Reference resources
+# - Single-Node OpenShift
+#   https://docs.openshift.com/container-platform/4.17/installing/installing_sno/install-sno-installing-sno.html
+# - OpenShift Agent-based installer
+#   https://docs.openshift.com/container-platform/4.17/installing/installing_with_agent_based_installer/preparing-to-install-with-agent-based-installer.html
+# - Repo Single Node OpenShift on ARM Mac
+#   https://github.com/tnk4on/sno-on-arm-mac
+# - minimum SNO requirements
+#     vCPUs:   8 to 10
+#     memory:  16 GB
+#     storage: 120 GB
+
+
+

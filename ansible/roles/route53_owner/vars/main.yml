@@ -1,0 +1,104 @@
+
+# generated output vars
+
+route53_subdomain_user_access_key: <generated-by-tasks-written-to-vault>
+route53_subdomain_user_secret: <generated-by-tasks-written-to-vault>
+route53_subdomain_user_arn: <generated-by-tasks-written-to-vault>
+
+
+# inferred vars
+
+route53_subdomain_fqdn: "{{ route53_subdomain_name }}.{{ route53_hostedzone_name }}"
+
+route53_subdomain_user: "{{ route53_subdomain_name }}-subdomain-user"
+route53_subdomain_group: "{{ route53_subdomain_name }}-subdomain-group"
+
+route53_allzones_policy_name: "{{ route53_subdomain_name }}-route53-allzones-policy"
+route53_subdomain_policy_name: "{{ route53_subdomain_name }}-route53-subdomain-policy"
+route53_hostedzones_policy_name: "{{ route53_subdomain_name }}-route53-hostedzones-policy" 
+route53_certmanager_trust_policy_name: "{{ route53_subdomain_name }}-route53-certmanager-trust-policy"  
+
+
+# policy templates from vars
+
+route53_allzones_policy_json: |
+  {
+    "Statement": [
+      {
+        "Action": [
+          "route53:ListHostedZones",
+          "route53:GetHostedZoneCount",
+          "route53:ListHostedZonesByName",
+        ],
+        "Effect": "Allow",
+        "Resource": "*"
+      }
+    ],
+    "Version": "2012-10-17"
+  }
+
+
+route53_subdomain_policy_json: |
+  {
+    "Statement": [
+      {
+        "Action": "route53:ChangeResourceRecordSets",
+        "Condition": {
+            "ForAllValues:StringLike": {
+                "route53:ChangeResourceRecordSetsNormalizedRecordNames": [
+                    "*.{{ route53_subdomain_fqdn }}"
+                ]
+            }
+        },
+        "Effect": "Allow",
+        "Resource": "arn:aws:route53:::hostedzone/{{ route53_hostedzone_id }}"
+      }
+    ],
+    "Version": "2012-10-17"
+  }
+
+route53_hostedzones_policy_json: |
+  {
+    "Statement": [
+      {
+        "Action": [
+          "route53:GetHostedZone",
+          "route53:ListResourceRecordSets",
+          "route53:ListHostedZones",
+          "route53:ListResourceRecordSets",
+          "route53:GetHostedZoneCount",
+          "route53:ListHostedZonesByName",
+          "route53:GetChange"
+        ],
+        "Effect": "Allow",
+        "Resource": [
+            "arn:aws:route53:::hostedzone/{{ route53_hostedzone_id }}",
+            "arn:aws:route53:::change/*"
+        ]
+      }
+    ],
+    "Version": "2012-10-17"
+  }
+
+
+# experimental
+aws_region: us-east-1
+eks_hash: 54CABD88EEE3A227AF0FA468BE4EF0B5
+route53_certmanager_trust_policy_json: |
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": "sts:AssumeRoleWithWebIdentity",
+        "Principal": {
+          "Federated": "arn:aws:iam::* ${aws-account-id}:oidc-provider/oidc.eks.{{ aws_region }}.amazonaws.com/id/{{ eks_hash }}"
+        },
+        "Condition": {
+          "StringEquals": {
+            "oidc.eks.{{ aws_region }}.amazonaws.com/id/{{ eks_hash }}:sub": "system:serviceaccount:cert-manager:${service-account-name}"
+          }
+        }
+      }
+    ]
+  }

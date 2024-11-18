@@ -1,0 +1,7 @@
+---
+
+- name: Clean agent tmp dir
+  ansible.builtin.file:
+    path: "{{ sno_agent_dir }}"
+    state: absent
+    

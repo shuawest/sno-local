@@ -1,0 +1,28 @@
+---
+
+# AWS admin secrets required to create IAM user/group/policy
+# - put these credentials in a secret vault that only the aws account owner can use
+# - ansible-vault create aws-admin-secrets
+# - add the vault location to your playbook hosts declaration
+#      - hosts: client
+#        vars_files: 
+#        - "{{ secrets_dir }}/aws-admin-vault"
+route53_owner_access_key: put-in-isolated-secret-vault
+route53_owner_secret: put-in-isolated-secret-vault
+
+route53_subdomain_vault_pass: changeme
+secrets_dir: ~/.ansible/secrets
+route53_subdomain_vault_pass_path: "{{ secrets_dir }}/ansible-vault-pass"
+route53_subdomain_vault_name: "{{ route53_subdomain_name }}-subdomain-vault"
+
+route53_credentials_write_vault: true
+route53_credentials_show: false
+
+# AWS Route53 domain vars
+# - customize in inventory or playbook
+route53_subdomain_name: sub
+route53_hostedzone_name: mydomain.io
+route53_hostedzone_id: ASDFGHJKL123456789
+
+# route53_owner_action: create | rotate | destroy | assert
+route53_owner_action: create

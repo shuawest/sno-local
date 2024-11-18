@@ -42,18 +42,16 @@ utm_net_isolate: false
 
 # default icon
 utm_icon: linux
-utm_icon_custom: false
-
 # example: custom icon - place ico in <vm>.utm/Data/ directory
 #utm_icon: icon-k8s.ico | icon-microservice.ico | icon-microshift.ico | icon-ocp.ico | icon-redhat.ico | icon-rhlayers.ico
-#utm_icon_custom: true
+utm_icon_custom: "{{ not utm_icon == 'linux' }}"
 
 utm_clipboard_sharing: false
 utm_dir_share_mode: VirtFS
 utm_dir_share_readonly: false
 
 # generate mac address
-utm_vm_mac_address: "{{ '52:54:00' | community.general.random_mac }}"
+utm_vm_mac_addr: "{{ '52:54:00' | community.general.random_mac }}"
 
 # generate UUIDs
 utm_vm_uuid: "{{ 9999999999999999999999 | random | to_uuid | upper }}"

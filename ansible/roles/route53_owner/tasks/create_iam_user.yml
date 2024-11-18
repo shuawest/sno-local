@@ -1,0 +1,64 @@
+
+
+- name: Create IAM user 
+  community.aws.iam_user:
+    aws_access_key: "{{ route53_owner_access_key }}"
+    aws_secret_key: "{{ route53_owner_secret }}"
+    name: "{{ route53_subdomain_user }}"
+    state: present
+  register: iam_user_res
+
+- name: Gather IAM user ARN
+  set_fact:
+    route53_subdomain_user_arn: "{{ iam_user_res.user.arn | default('error') }}"
+
+
+- name: Create Route53 subdomain IAM group with the user as a member
+  community.aws.iam_group:
+    aws_access_key: "{{ route53_owner_access_key }}"
+    aws_secret_key: "{{ route53_owner_secret }}"
+    name: "{{ route53_subdomain_group }}"
+    users: 
+    - "{{ route53_subdomain_user }}"
+    state: present
+
+- name: Create DNS IAM policy to update target subdomain attached to the group 
+  community.aws.iam_policy:
+    aws_access_key: "{{ route53_owner_access_key }}"
+    aws_secret_key: "{{ route53_owner_secret }}"
+    iam_type: group
+    iam_name: "{{ route53_subdomain_group }}"
+    policy_name: "{{ route53_subdomain_policy_name }}"
+    state: present
+    policy_json: "{{ route53_subdomain_policy_json }}"
+
+- name: Create hostedzones IAM policy  
+  community.aws.iam_policy:
+    aws_access_key: "{{ route53_owner_access_key }}"
+    aws_secret_key: "{{ route53_owner_secret }}"
+    iam_type: group
+    iam_name: "{{ route53_subdomain_group }}"
+    policy_name: "{{ route53_hostedzones_policy_name }}"
+    state: present
+    policy_json: "{{ route53_hostedzones_policy_json }}"
+
+- name: Create allzones IAM policy  
+  community.aws.iam_policy:
+    aws_access_key: "{{ route53_owner_access_key }}"
+    aws_secret_key: "{{ route53_owner_secret }}"
+    iam_type: group
+    iam_name: "{{ route53_subdomain_group }}"
+    policy_name: "{{ route53_allzones_policy_name }}"
+    state: present
+    policy_json: "{{ route53_allzones_policy_json }}"
+
+# - name: Create cert-manager trust IAM policy  
+#   community.aws.iam_policy:
+#     aws_access_key: "{{ route53_owner_access_key }}"
+#     aws_secret_key: "{{ route53_owner_secret }}"
+#     iam_type: group
+#     iam_name: "{{ route53_subdomain_group }}"
+#     policy_name: "{{ route53_certmanager_trust_policy_name }}"
+#     state: present
+#     policy_json: "{{ route53_certmanager_trust_policy_json }}"
+

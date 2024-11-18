@@ -1,0 +1,32 @@
+---
+
+- name: Configure AWS access account
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+  - name: Fetch secrets
+    ansible.builtin.set_fact:
+      route53_owner_access_key: "{{ lookup('community.general.onepassword', 'milabs-admin', field='aws_admin_access_key_id') }}"
+      route53_owner_secret: "{{ lookup('community.general.onepassword', 'milabs-admin', field='aws_admin_secret_access_key') }}"
+      route53_hostedzone_id: "{{ lookup('community.general.onepassword', 'milabs-secrets', field='milabs_route53_hostedzone_id') }}"
+        
+  - name: Create homelab Route53 subdomain user account
+    ansible.builtin.include_role:
+      name: route53_owner
+    vars:
+      route53_owner_action: destroy
+      route53_subdomain_name: local
+      route53_hostedzone_name: milabs.io
+      route53_credentials_write_vault: false
+      route53_credentials_show: true
+
+  - name: Create homelab Route53 subdomain user account
+    ansible.builtin.include_role:
+      name: route53_owner
+    vars:
+      route53_owner_action: create
+      route53_subdomain_name: local
+      route53_hostedzone_name: milabs.io
+      route53_credentials_write_vault: false
+      route53_credentials_show: true

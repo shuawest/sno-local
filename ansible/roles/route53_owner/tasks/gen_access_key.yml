@@ -1,0 +1,33 @@
+---
+
+- name: Fetch Access keys for user
+  ignore_errors: true
+  community.aws.iam_access_key_info:
+    user_name: "{{ route53_subdomain_user }}"
+  register: subdomain_user_keys
+
+- name: Remove access keys
+  ignore_errors: true
+  with_items: "{{ subdomain_user_keys.access_keys }}"
+  community.aws.iam_access_key:
+    aws_access_key: "{{ route53_owner_access_key }}"
+    aws_secret_key: "{{ route53_owner_secret }}"
+    user_name: "{{ route53_subdomain_user }}"
+    id: "{{ item.access_key_id }}"
+    state: absent
+
+- name: Create a new access key for Route53 subdomain IAM user 
+  community.aws.iam_access_key:
+    aws_access_key: "{{ route53_owner_access_key }}"
+    aws_secret_key: "{{ route53_owner_secret }}"
+    user_name: "{{ route53_subdomain_user }}"
+    state: present
+  register: access_key_res
+
+- name: Gather generated user access keys
+  set_fact:
+    route53_subdomain_user_access_key: "{{ access_key_res.access_key_id | default('error') }}"  
+    route53_subdomain_user_secret: "{{ access_key_res.secret_access_key | default('error') }}" 
+
+
+

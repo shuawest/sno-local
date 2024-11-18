@@ -8,11 +8,10 @@
 
   - name: Create UTM VM
     ansible.builtin.include_role:
-      name: utm_create
-      tasks_from: start_vm.yml
+      name: utm
+      tasks_from: stop_vm.yml
     vars:
       utm_vm_name: sno-csb-arm
-      utm_start_seconds: 30
 
 
 

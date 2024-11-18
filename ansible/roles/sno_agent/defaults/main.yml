@@ -1,2 +1,37 @@
 ---
 
+# required variables
+sno_base_domain: 
+sno_cluster_name: 
+sno_ip_addr: 
+sno_mac_addr: 
+sno_ssh_key: 
+sno_pull_secret: 
+
+# staging
+sno_staging_dir: "{{ inventory_dir }}/../target"
+# sno_staging_dir: "/tmp"
+
+# inferred variables
+sno_agent_dir: "{{ sno_staging_dir }}/{{ sno_cluster_name }}"
+sno_api_dns: "api.{{ sno_cluster_name }}.{{ sno_base_domain }}"
+sno_api_url: "https://{{ sno_api_dns }}:6443"
+sno_apps_dns: "apps.{{ sno_cluster_name }}.{{ sno_base_domain }}"
+sno_console_dns: "console-openshift-console.{{ sno_apps_dns }}"
+sno_console_url: "https://{{ sno_console_dns }}"
+
+# defaults
+sno_version: 4.17.3
+sno_imageset_ref: openshift-4.17
+sno_type: openshift   # openshift | microshift
+sno_arch: aarch64     # aarch64 | x86_64
+sno_platform: none    # none | baremetal | vsphere
+sno_net_interface: enp0s1
+sno_dns_server: 8.8.8.8
+sno_root_device: /dev/vda
+
+sno_host_ip_addr: 192.168.86.45
+sno_host_net_interface: en0
+# sno_host_ip_addr: 127.0.0.1
+# sno_host_net_interface: lo0
+

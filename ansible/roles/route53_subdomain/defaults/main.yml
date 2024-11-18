@@ -1,0 +1,44 @@
+---
+
+route53_subdomain_name: rhtfsi
+
+secrets_dir: ~/.ansible/secrets
+route53_subdomain_vault_name: "{{ route53_subdomain_name }}-subdomain-vault"
+
+# route53_subdomain_action: create | destroy | assert
+route53_subdomain_action: create
+
+route53_subdomain_records: []
+# Sample DNS requirements
+# https://docs.openshift.com/container-platform/4.13/installing/installing_bare_metal/installing-bare-metal.html#installation-dns-user-infra_installing-bare-metal
+# route53_subdomain_records:
+#   api:
+#     record: "api.sub.mydomain.io"
+#     ips: "10.0.0.2"
+#     zone: "mydomain.io"
+#     type: A
+#   apps:
+#     record: "*.apps.sub.mydomain.io"
+#     ips: "10.0.0.2"
+#     zone: "mydomain.io"
+#     type: A
+
+
+# AWS Route53 IAM access key for editing subdomains 
+# - put these credentials in the environment secret vault 
+# - ansible-vault create route53-subdomain-secrets
+# - add the vault location to your playbook hosts declaration
+#      - hosts: client
+#        vars_files: 
+#        - "{{ secrets_dir }}/{{ route53_subdomain_vault_name }}"
+route53_subdomain_user_access_key: from-subdomain-secret-vault
+route53_subdomain_user_secret: from-subdomain-secret-vault
+
+route53_subdomain_user: from-subdomain-secret-vault
+route53_subdomain_user_arn: from-subdomain-secret-vault
+
+route53_hostedzone_id: from-subdomain-secret-vault
+route53_hostedzone_name: from-subdomain-secret-vault
+route53_subdomain_fqdn: from-subdomain-secret-vault
+
+

@@ -1,0 +1,24 @@
+---
+
+- name: Create Single-Node OpenShift UTM VM
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+  - name: Fetch secrets
+    ansible.builtin.set_fact:
+      vault:
+        aws_admin_access_key_id: "{{ lookup('community.general.onepassword', 'milabs-admin', field='aws_admin_access_key_id') }}"
+        aws_admin_secret_access_key: "{{ lookup('community.general.onepassword', 'milabs-admin', field='aws_admin_secret_access_key') }}"
+        route53_user_access_key_id: "{{ lookup('community.general.onepassword', 'milabs-secrets', field='route53_user_access_key_id') }}"
+        route53_user_secret_access_key: "{{ lookup('community.general.onepassword', 'milabs-secrets', field='route53_user_secret_access_key') }}"
+        github_pat: "{{ lookup('community.general.onepassword', 'milabs-secrets', field='github_pat') }}"
+        csb_ssh_public_key: "{{ lookup('community.general.onepassword', 'milabs-secrets', field='csb_ssh_public_key') }}"
+        air_ssh_public_key: "{{ lookup('community.general.onepassword', 'milabs-secrets', field='air_ssh_public_key') }}"
+        openshift_pull_secret: "{{ lookup('community.general.onepassword', 'milabs-secrets', field='openshift_pull_secret_base64') | b64decode }}"
+
+  - debug: 
+      msg: 
+      - "{{ vault }}"
+
+

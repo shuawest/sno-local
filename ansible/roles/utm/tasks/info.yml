@@ -33,6 +33,29 @@
     utm_vm_started: "{{ 'started' in utm_vm_status_output.stdout | default(false) }}" 
     utm_vm_exists: "{{ 'absent' not in utm_vm_status_output.stdout }}"  
 
+- name: Get VM mac address
+  when: utm_vm_exists
+  ansible.builtin.shell: |
+    osascript -e 'tell application "UTM"
+      set vm to virtual machine named "{{ utm_vm_name }}"
+      set config to configuration of vm
+      set net to item 1 of network interfaces of config
+      get address of net
+    end tell'
+  register: utm_vm_mac_addr_output
+
+    # osascript -e 'tell application "UTM"
+    #   set vm to virtual machine named "sno-csb-arm"
+    #   set config to configuration of vm
+    #   set net to item 1 of network interfaces of config
+    #   get address of net
+    # end tell'
+
+- name: Get VM mac address
+  when: utm_vm_exists
+  set_fact: 
+    utm_vm_mac_addr: "{{ utm_vm_mac_addr_output.stdout | trim }}"
+
 - name: Get IP Address of VM if started
   when: utm_vm_started 
   ansible.builtin.shell: |

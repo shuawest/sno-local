@@ -1,0 +1,17 @@
+apiVersion: agent-install.openshift.io/v1beta1
+kind: InfraEnv
+metadata:
+  name: myinfraenv
+  namespace: cluster0
+spec:
+  clusterRef:
+    name: ostest
+    namespace: cluster0
+  cpuArchitecture: aarch64
+  pullSecretRef:
+    name: pull-secret
+  sshAuthorizedKey: <ssh_public_key>
+  nmStateConfigLabelSelector:
+    matchLabels:
+      cluster0-nmstate-label-name: cluster0-nmstate-label-value
+      

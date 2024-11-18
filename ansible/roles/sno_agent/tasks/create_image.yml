@@ -1,0 +1,53 @@
+---
+
+- name: Prepare the agent directory
+  ansible.builtin.include_role:
+    name: sno_agent
+    tasks_from: prep.yml
+
+- name: Generate agent-config.yaml
+  ansible.builtin.template:
+    src: templates/agent-config.yaml.j2
+    dest: "{{ sno_agent_dir }}/agent-config.yaml"
+    mode: '0644'
+
+- name: Generate install-config.yaml
+  ansible.builtin.template:
+    src: templates/install-config.yaml.j2
+    dest: "{{ sno_agent_dir }}/install-config.yaml"
+    mode: '0644'
+
+- name: Generate agent containerfile
+  ansible.builtin.template:
+    src: templates/Containerfile
+    dest: "{{ sno_agent_dir }}/Containerfile"
+    mode: '0644'
+
+- name: Ensure podman machine is rootful
+  ansible.builtin.shell: |
+    if [ "$(podman machine inspect | grep Rootful | grep false)" ]; then
+      podman machine stop
+      podman machine set --rootful
+      podman machine start
+    fi
+
+- name: Build agent container image
+  ansible.builtin.shell: |
+    export OCP_VERSION={{ sno_version }}
+    podman build -f {{ sno_agent_dir }}/Containerfile -t openshift-install --build-arg VERSION=${OCP_VERSION}
+
+- name: Create image
+  # become: yes
+  ansible.builtin.shell: |
+    podman run --privileged --rm \
+        -v {{ sno_agent_dir }}:/data \
+        -v {{ sno_agent_dir }}/image_cache:/root/.cache/agent/image_cache \
+        -v {{ sno_agent_dir }}/files_cache:/root/.cache/agent/files_cache \
+        -w /data openshift-install:latest --dir ./ \
+        agent create image
+
+# - name: Create agent cluster manifests
+#   shell: | 
+#     openshift-install agent create cluster-manifests --dir {{ sno_agent_dir }}
+
+

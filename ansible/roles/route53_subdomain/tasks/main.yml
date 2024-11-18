@@ -1,0 +1,12 @@
+---
+
+- import_tasks: dns_records.yml
+  when: route53_subdomain_action == 'create'
+
+
+- import_tasks: destroy_dns_records.yml
+  when: route53_subdomain_action == 'destroy'
+
+
+- import_tasks: dns_access_assertions.yml
+  when: route53_subdomain_action == 'assert' 

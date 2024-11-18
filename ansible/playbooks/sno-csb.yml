@@ -1,0 +1,109 @@
+---
+
+- name: Create Single-Node OpenShift UTM VM on CSB macbook
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+  - name: Fetch secrets
+    ansible.builtin.set_fact:
+      vault:
+        route53_user_access_key_id: "{{ lookup('community.general.onepassword', 'milabs-secrets', field='route53_user_access_key_id') }}"
+        route53_user_secret_access_key: "{{ lookup('community.general.onepassword', 'milabs-secrets', field='route53_user_secret_access_key') }}"
+        milabs_route53_hostedzone_id: "{{ lookup('community.general.onepassword', 'milabs-secrets', field='milabs_route53_hostedzone_id') }}"
+        github_pat: "{{ lookup('community.general.onepassword', 'milabs-secrets', field='github_pat') }}"
+        csb_ssh_public_key: "{{ lookup('community.general.onepassword', 'milabs-secrets', field='csb_ssh_public_key') }}"
+        openshift_pull_secret: "{{ lookup('community.general.onepassword', 'milabs-secrets', field='openshift_pull_secret_base64') | b64decode }}"
+
+  - name: Set SNO settings
+    ansible.builtin.set_fact:
+      sno:
+        cluster_name: sno-csb
+        vm_name: sno-csb-arm1
+        type: openshift                   # openshift | microshift
+        base_domain: local.milabs.io
+        version: 4.17.3
+        imageset: openshift-4.17
+        ip_addr: 192.168.64.8             
+        mac_addr: 62:65:35:D1:05:B9       
+        arch: aarch64                     # aarch64 | x86_64
+        icon: icon-rhlayers.ico           # icon-k8s.ico | icon-microservice.ico | icon-microshift.ico | icon-ocp.ico | icon-redhat.ico | icon-rhlayers.ico
+        cores: 10
+        memory_gb: 18
+        root_disk_gb: 200
+        pvc_disk_gb: 200 
+        clean_image: true
+        ssh_public_key: "{{ vault.csb_ssh_public_key }}"
+        pull_secret: "{{ vault.openshift_pull_secret }}"
+
+  - name: Put Route53 DNS update
+    ansible.builtin.include_role:
+      name: route53_subdomain
+    vars:
+      route53_subdomain_action: create
+      route53_subdomain_user_access_key: "{{ vault.route53_user_access_key_id }}"
+      route53_subdomain_user_secret: "{{ vault.route53_user_secret_access_key }}"
+      route53_subdomain_records:
+        api:
+          record: "api.{{ sno.cluster_name }}.{{ sno.base_domain }}"
+          ips: "{{ sno.ip_addr }}"
+          zone: "{{ sno.base_domain }}"
+          type: A
+        apps:
+          record: "api.{{ sno.cluster_name }}.{{ sno.base_domain }}"
+          ips: "{{ sno.ip_addr }}"
+          zone: "{{ sno.base_domain }}"
+          type: A
+
+  - name: Clean SNO image output - if clean enabled
+    when: sno.clean_image
+    ansible.builtin.include_role:
+      name: sno_agent
+      tasks_from: clean.yml
+    vars:
+      sno_base_domain: "{{ sno.base_domain }}"
+      sno_cluster_name: "{{ sno.cluster_name }}"
+
+  - name: Create SNO UTM VM
+    ansible.builtin.include_role:
+      name: utm
+      tasks_from: create.yml
+    vars:
+      utm_clean_vm: true
+      utm_vm_name: "{{ sno.vm_name }}"
+      utm_vm_cores: "{{ sno.cores }}"
+      utm_vm_memory: "{{ sno.memory_gb * 1024 }}"
+      utm_vm_mac_addr: "{{ sno.mac_addr }}"
+      utm_icon: "{{ sno.ico }}"
+      utm_disk_primary_size_gb: "{{ root_disk_gb }}"
+      utm_disk_secondary_size_gb: "{{ pvc_disk_gb }}"
+      utm_qemu_debug_log: true
+
+# NOTE: do I need to get the mac address of the VM?
+
+  - name: Generate SNO installer image
+    ansible.builtin.include_role:
+      name: sno_agent
+      tasks_from: create_image.yml
+    vars:
+      sno_base_domain: "{{ sno.base_domain }}"
+      sno_cluster_name: "{{ sno.cluster_name }}"
+      sno_ip_addr: "{{ sno.ip_addr }}"
+      sno_mac_addr: "{{ sno.mac_addr }}"
+      sno_pull_secret: "{{ sno.pull_secret }}"
+      sno_ssh_key: "{{ sno.ssh_public_key }}"
+      sno_version: "{{ sno.version }}"
+      sno_imageset_ref: "{{ sno.imageset }}"
+      sno_arch: "{{ sno.arch }}"
+
+  - debug:
+      msg: "sno_agent_dir: {{ sno_agent_dir }}"
+
+  - name: Set the boot ISO for the UTM VM
+    ansible.builtin.include_role:
+      name: utm
+      tasks_from: set_iso.yml
+    vars:
+      utm_vm_name: "{{ sno.vm_name }}"
+      utm_boot_iso: "{{ sno_agent_dir }}/agent.{{ sno.arch }}.iso"
+

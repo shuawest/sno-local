@@ -6,12 +6,12 @@
   gather_facts: no
   tasks:
 
-  - name: Create UTM VM
+  - name: Fetch UTM VM Info
     ansible.builtin.include_role:
-      name: utm_create
+      name: utm
       tasks_from: info.yml
     vars:
-      utm_vm_name: sno-csb-arm2
+      utm_vm_name: sno-csb-arm
 
   - name: Show status
     debug: 
@@ -20,5 +20,6 @@
       - "utm_vm_exists: {{ utm_vm_exists }}"
       - "utm_vm_started: {{ utm_vm_started }}"
       - "utm_vm_ip_addr: {{ utm_vm_ip_addr }}"
+      - "utm_vm_mac_addr: {{ utm_vm_mac_addr }}"
 
 

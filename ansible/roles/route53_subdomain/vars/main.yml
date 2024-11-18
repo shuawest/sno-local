@@ -1,0 +1,8 @@
+
+
+# Assertion values
+
+route53_subdomain_assert_invalid_domain: "invalid.{{ route53_hostedzone_name }}"
+route53_subdomain_assert_fake_domain: "fakevalid.{{ route53_subdomain_fqdn }}"
+route53_subdomain_assert_fake_ip: "10.0.0.4"
+

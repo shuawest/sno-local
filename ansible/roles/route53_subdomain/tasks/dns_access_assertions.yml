@@ -1,0 +1,66 @@
+---
+
+# Test access with the generated IAM User
+
+- name: Show Route53 vars
+  debug: 
+    msg: 
+    - "route53_subdomain_user_arn: {{ route53_subdomain_user_arn }}"
+    - "route53_subdomain_user_access_key: {{ route53_subdomain_user_access_key }}"
+    - "route53_hostedzone_name: {{ route53_hostedzone_name }}"
+    - "route53_hostedzone_id: {{ route53_hostedzone_id }}"
+    - "route53_subdomain_fqdn: {{ route53_subdomain_fqdn }}"
+
+
+- name: Fail test ensure user cannot edit other subdomains in the hosted zone
+  ignore_errors: true 
+  community.aws.route53:
+    aws_access_key: "{{ route53_subdomain_user_access_key }}"
+    aws_secret_key: "{{ route53_subdomain_user_secret }}"
+    state: present
+    record: "{{ route53_subdomain_assert_invalid_domain }}"
+    value: "{{ route53_subdomain_assert_fake_ip }}"
+    zone: "{{ route53_hostedzone_name }}"
+    hosted_zone_id: "{{ route53_hostedzone_id }}"
+    type: "A"
+    ttl: 7200
+    overwrite: yes
+    wait: yes
+  register: route53_result
+  failed_when: "'is not authorized to perform: route53:ChangeResourceRecordSets' not in route53_result.module_stderr"
+
+# TODO: add assertion of route53_result
+
+# Should report an error similar to: 
+#   Failed to update records: An error occurred (AccessDenied) when calling the 
+#   ChangeResourceRecordSets operation: User: arn:aws:iam::075971188065:user/rhtfsi-dns-user 
+#   is not authorized to perform: route53:ChangeResourceRecordSets on resource: 
+#   arn:aws:route53:::hostedzone/Z04977272FB9P68H6O0NN because no identity-based 
+#   policy allows the route53:ChangeResourceRecordSets action
+
+- name: Ensure user can add subdomain in the allowed hosted zone 
+  community.aws.route53:
+    aws_access_key: "{{ route53_subdomain_user_access_key }}"
+    aws_secret_key: "{{ route53_subdomain_user_secret }}"
+    state: present
+    record: "{{ route53_subdomain_assert_fake_domain }}"
+    value: "{{ route53_subdomain_assert_fake_ip }}"
+    zone: "{{ route53_hostedzone_name }}"
+    hosted_zone_id: "{{ route53_hostedzone_id }}"
+    type: "A"
+    ttl: 7200
+    overwrite: yes
+    wait: yes
+
+- name: Ensure user can delete subdomain in the allowed hosted zone 
+  community.aws.route53:
+    aws_access_key: "{{ route53_subdomain_user_access_key }}"
+    aws_secret_key: "{{ route53_subdomain_user_secret }}"
+    state: absent
+    record: "{{ route53_subdomain_assert_fake_domain }}"
+    zone: "{{ route53_hostedzone_name }}"
+    hosted_zone_id: "{{ route53_hostedzone_id }}"
+    type: "A"
+    wait: yes
+
+

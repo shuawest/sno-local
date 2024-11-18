@@ -1,0 +1,22 @@
+apiVersion: hive.openshift.io/v1
+kind: ClusterDeployment
+metadata:
+  name: ostest
+  namespace: cluster0
+spec:
+  baseDomain: test.metalkube.org
+  clusterInstallRef:
+    group: extensions.hive.openshift.io
+    kind: AgentClusterInstall
+    name: test-agent-cluster-install
+    version: v1beta1
+  clusterName: ostest
+  controlPlaneConfig:
+    servingCertificates: {}
+  platform:
+    agentBareMetal:
+      agentSelector:
+        matchLabels:
+          bla: aaa
+  pullSecretRef:
+    name: pull-secret

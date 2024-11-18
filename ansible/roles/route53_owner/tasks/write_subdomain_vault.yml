@@ -1,0 +1,32 @@
+---
+
+- name: Show subdomain output values
+  debug: 
+    msg: 
+    - "route53_subdomain_vault_name: {{ route53_subdomain_vault_name }}"
+    - "route53_subdomain_vault_pass_path: {{ route53_subdomain_vault_pass_path }}"
+    - "route53_hostedzone_id: {{ route53_hostedzone_id }}"
+    - "route53_hostedzone_name: {{ route53_hostedzone_name }}"
+    - "route53_subdomain_fqdn: {{ route53_subdomain_fqdn }}"
+    - "route53_subdomain_user: {{ route53_subdomain_user }}"
+    - "route53_subdomain_user_arn: {{ route53_subdomain_user_arn }}"
+    - "route53_subdomain_user_access_key: ***********"
+    - "route53_subdomain_user_secret: ***********"
+
+- name: Write vault pass
+  ansible.builtin.copy:
+    content: "{{ route53_subdomain_vault_pass }}"
+    dest: "{{ secrets_dir }}/{{ route53_subdomain_vault_pass_path }}"
+    backup: true
+    mode: '0640' 
+
+- name: Write vault content
+  ansible.builtin.template:
+    src: templates/subdomain-vault.j2
+    dest: "{{ secrets_dir }}/{{ route53_subdomain_vault_name }}"
+    backup: true
+    mode: '0640' 
+
+- name: Encrypt vault
+  shell: |
+    ansible-vault encrypt {{ secrets_dir }}/{{ route53_subdomain_vault_name }} --vault-password-file {{ route53_subdomain_vault_pass_path }}

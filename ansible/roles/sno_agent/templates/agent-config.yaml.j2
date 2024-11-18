@@ -1,0 +1,34 @@
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: {{ sno_cluster_name }}
+rendezvousIP: {{ sno_ip_addr }}
+hosts: 
+  - hostname: m1-ocp
+    interfaces:
+      - name: {{ sno_net_interface }}
+        macAddress: {{ sno_mac_addr }}
+    rootDeviceHints: 
+      deviceName: {{ sno_root_device }}
+    networkConfig: 
+      interfaces:
+        - name: {{ sno_net_interface }}
+          type: ethernet
+          state: up
+          mac-address: {{ sno_mac_addr }}
+          ipv4:
+            enabled: true
+            address:
+              - ip: {{ sno_ip_addr }}
+                prefix-length: 24
+            dhcp: false
+      dns-resolver:
+        config:
+          server:
+            - {{ sno_dns_server }}
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: {{ sno_host_ip_addr }}
+            next-hop-interface: {{ sno_host_net_interface }}
+            table-id: 254

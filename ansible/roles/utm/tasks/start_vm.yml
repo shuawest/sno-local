@@ -2,7 +2,7 @@
 
 - name: Get VM status
   ansible.builtin.include_role:
-    name: utm_create
+    name: utm
     tasks_from: info.yml
 
 - name: Start the VM and wait for it to start
@@ -25,6 +25,6 @@
 
 - name: Get VM new status
   ansible.builtin.include_role:
-    name: utm_create
+    name: utm
     tasks_from: info.yml
 

@@ -1,0 +1,35 @@
+---
+
+- name: Create agent tmp dir
+  ansible.builtin.file:
+    path: "{{ sno_agent_dir }}"
+    state: directory
+
+- name: Create agent cluster-manifests dir
+  ansible.builtin.file:
+    path: "{{ sno_agent_dir }}/cluster-manifests"
+    state: directory
+
+- name: Create agent mirror dir
+  ansible.builtin.file:
+    path: "{{ sno_agent_dir }}/mirror"
+    state: directory
+
+- name: Create agent image_cache
+  ansible.builtin.file:
+    path: "{{ sno_agent_dir }}/image_cache"
+    state: directory
+
+- name: Create agent files_cache
+  ansible.builtin.file:
+    path: "{{ sno_agent_dir }}/files_cache"
+    state: directory
+
+- name: Get Agent Installer version info
+  shell: | 
+    openshift-install version
+  register: ocp_agent_info_output
+
+- name: Show the agent installer version info
+  debug:
+    msg: "{{ ocp_agent_info_output.stdout }}"

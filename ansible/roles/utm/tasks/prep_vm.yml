@@ -22,7 +22,7 @@
   debug:
     msg: 
     - "Continuing tasks as the directory '{{ prep_utm_vm_dir }}' does not exist."
-    - "utm_vm_mac_address: {{ utm_vm_mac_address }}"
+    - "utm_vm_mac_addr: {{ utm_vm_mac_addr }}"
     - "utm_vm_uuid: {{ utm_vm_uuid }}"
     - "utm_iso_guid: {{ utm_iso_guid }}"
     - "utm_disk_primary_guid: {{ utm_disk_primary_guid }}"

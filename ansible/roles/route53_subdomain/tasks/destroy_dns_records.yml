@@ -1,0 +1,19 @@
+---
+
+- name: Remote Route53 records
+  with_items: "{{ route53_subdomain_records }}"
+  loop_control:
+    loop_var: recname
+  vars: 
+    dnsrecord: "{{ route53_subdomain_records[recname] }}"
+  community.aws.route53:
+    aws_access_key: "{{ route53_subdomain_user_access_key }}"
+    aws_secret_key: "{{ route53_subdomain_user_secret }}"
+    state: absent
+    record: "{{ dnsrecord.record }}"
+    value: "{{ dnsrecord.ips }}"
+    zone: "{{ dnsrecord.zone }}"
+    type: "{{ dnsrecord.type }}"
+    ttl: 7200
+    wait: yes
+
