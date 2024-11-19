@@ -1,0 +1,20 @@
+---
+
+
+- name: Ensure podman machine is rootful
+  ansible.builtin.shell: |
+    if [ "$(podman machine inspect | grep Rootful | grep false)" ]; then
+      podman machine stop
+      podman machine set --rootful
+      podman machine start
+    fi
+
+- name: Generate dnsmasq.conf
+  ansible.builtin.template:
+    src: templates/dnsmasq.conf.j2
+    dest: "{{ sno_agent_dir }}/dnsmasq.conf"
+    mode: '0644'
+
+# - name: Start dnsmasq
+#   ansible.builtin.shell: |
+#     podman run -d --rm -p 53:53/udp -v {{ sno_agent_dir }}/dnsmasq.conf:/etc/dnsmasq.conf --name dnsmasq quay.io/crcont/dnsmasq:latest

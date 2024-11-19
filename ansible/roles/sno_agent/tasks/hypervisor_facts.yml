@@ -1,0 +1,40 @@
+---
+
+- name: Get MacOS host Gateway IP 
+  ansible.builtin.shell: |
+    netstat -nr | grep 'default' | grep -v tun | awk '{print $2}'
+  register: macos_host_gateway_ip_addr_output
+
+- name: Get MacOS host IP 
+  ansible.builtin.shell: |
+    for interface in $(networksetup -listallhardwareports | awk '/^Device:/ {print $2}'); do
+      ip=$(ipconfig getifaddr $interface)
+      if [ -n "$ip" ]; then
+        echo "$ip"
+        echo "$interface"
+      fi
+    done
+  register: macos_host_ip_addr_output
+
+- name: Set host and gateway IP facts
+  ansible.builtin.set_fact:
+    cacheable: true
+    macos_host_ip_addr: "{{ macos_host_ip_addr_output.stdout_lines[0] | trim }}"
+    macos_host_interface: "{{ macos_host_ip_addr_output.stdout_lines[1] | trim }}"
+    macos_host_gateway_ip_addr: "{{ macos_host_gateway_ip_addr_output.stdout_lines[0] | trim }}"
+
+- name: Show host active network info
+  debug: 
+    msg: 
+    - "macos_host_ip_addr: {{ macos_host_ip_addr }}"
+    - "macos_host_interface: {{ macos_host_interface }}"
+    - "macos_host_gateway_ip_addr: {{ macos_host_gateway_ip_addr }}"
+    - "sno_machine_cidr_length: {{ sno_machine_cidr_length }}"
+    - "sno_machine_prefix: {{ macos_host_ip_addr | ansible.utils.ipsubnet( sno_machine_cidr_length ) | split('/') | first }}"
+
+- name: Calc subnet
+  debug: 
+    msg: 
+    - "calc_machine_subnet: {{ '172.140.54.6' | ansible.utils.ipsubnet(sno_machine_cidr_length) }}"
+    - "calc_machine_subnet: {{ macos_host_ip_addr | ansible.utils.ipsubnet(sno_machine_cidr_length) }}"
+

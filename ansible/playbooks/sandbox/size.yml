@@ -1,0 +1,53 @@
+---
+
+- name: Test size calculation
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+  - name: Set SNO settings
+    ansible.builtin.set_fact:
+      sno:
+        cluster_name: sno-csb
+        vm_name: sno-csb-arm1
+        type: openshift                   # openshift | microshift
+        hostedzone: milabs.io
+        base_domain: local.milabs.io
+        version: 4.17.3
+        imageset: openshift-4.17
+        ip_addr: 192.168.64.8             
+        mac_addr: 62:65:35:D1:05:B9       
+        arch: aarch64                     # aarch64 | x86_64
+        icon: icon-rhlayers.ico           # icon-k8s.ico | icon-microservice.ico | icon-microshift.ico | icon-ocp.ico | icon-redhat.ico | icon-rhlayers.ico
+        cores: 10
+        memory_gb: 18
+        root_disk_gb: 200
+        pvc_disk_gb: 200 
+        clean_image: true
+
+  - name: Set SNO settings
+    ansible.builtin.set_fact:
+      utm_vm_tmpl_name: "{{ sno.vm_name }}-tmpl"
+      utm_vm_name: "{{ sno.vm_name }}"
+      utm_vm_mac_addr: "{{ sno.mac_addr }}"
+      utm_disk_primary_size_gb: "{{ sno.root_disk_gb }}"
+      utm_disk_secondary_size_gb: "{{ sno.pvc_disk_gb * 1024 }}"
+
+  - debug: 
+      msg: |
+        osascript -e 'tell application "UTM"
+          set tmpl to virtual machine named "{{ utm_vm_tmpl_name }}"
+          duplicate tmpl with properties { ¬
+            configuration: { ¬
+              name:"{{ utm_vm_name }}", ¬ 
+              drives: { ¬ 
+                { guest size: {{ 200 * 1024 }} }, ¬ 
+                { guest size: {{ utm_disk_secondary_size_gb }} }, ¬ 
+                { removable: true, guest size:65536 } ¬ 
+              }, ¬
+              network interfaces: { ¬
+                { mode: shared, address: {{ utm_vm_mac_addr }} } ¬
+              } ¬ 
+            } ¬ 
+          }
+        end tell'

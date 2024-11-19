@@ -4,7 +4,7 @@ metadata:
   name: {{ sno_cluster_name }}
 rendezvousIP: {{ sno_ip_addr }}
 hosts: 
-  - hostname: m1-ocp
+  - hostname: sno-master
     interfaces:
       - name: {{ sno_net_interface }}
         macAddress: {{ sno_mac_addr }}
@@ -20,15 +20,15 @@ hosts:
             enabled: true
             address:
               - ip: {{ sno_ip_addr }}
-                prefix-length: 24
+                prefix-length: {{ sno_machine_cidr_length }}
             dhcp: false
       dns-resolver:
         config:
           server:
-            - {{ sno_dns_server }}
+            - {{ macos_host_gateway_ip_addr }}
       routes:
         config:
           - destination: 0.0.0.0/0
-            next-hop-address: {{ sno_host_ip_addr }}
-            next-hop-interface: {{ sno_host_net_interface }}
+            next-hop-address: {{ macos_host_ip_addr }}
+            next-hop-interface: {{ macos_host_interface }}
             table-id: 254

@@ -23,21 +23,12 @@
     dest: "{{ sno_agent_dir }}/Containerfile"
     mode: '0644'
 
-- name: Ensure podman machine is rootful
-  ansible.builtin.shell: |
-    if [ "$(podman machine inspect | grep Rootful | grep false)" ]; then
-      podman machine stop
-      podman machine set --rootful
-      podman machine start
-    fi
-
 - name: Build agent container image
   ansible.builtin.shell: |
     export OCP_VERSION={{ sno_version }}
     podman build -f {{ sno_agent_dir }}/Containerfile -t openshift-install --build-arg VERSION=${OCP_VERSION}
 
 - name: Create image
-  # become: yes
   ansible.builtin.shell: |
     podman run --privileged --rm \
         -v {{ sno_agent_dir }}:/data \
@@ -46,8 +37,9 @@
         -w /data openshift-install:latest --dir ./ \
         agent create image
 
-# - name: Create agent cluster manifests
-#   shell: | 
-#     openshift-install agent create cluster-manifests --dir {{ sno_agent_dir }}
+- name: Emit sno_boot_iso for use at host level
+  ansible.builtin.set_fact:
+    cacheable: true
+    sno_boot_iso: "{{ sno_agent_dir }}/agent.{{ sno_arch }}.iso"
 
 

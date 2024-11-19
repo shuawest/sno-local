@@ -9,7 +9,7 @@ sno_ssh_key:
 sno_pull_secret: 
 
 # staging
-sno_staging_dir: "{{ inventory_dir }}/../target"
+sno_staging_dir: "{{ role_path }}/../../target"
 # sno_staging_dir: "/tmp"
 
 # inferred variables
@@ -26,12 +26,14 @@ sno_imageset_ref: openshift-4.17
 sno_type: openshift   # openshift | microshift
 sno_arch: aarch64     # aarch64 | x86_64
 sno_platform: none    # none | baremetal | vsphere
+sno_root_device: /dev/vda
 sno_net_interface: enp0s1
 sno_dns_server: 8.8.8.8
-sno_root_device: /dev/vda
 
-sno_host_ip_addr: 192.168.86.45
-sno_host_net_interface: en0
-# sno_host_ip_addr: 127.0.0.1
-# sno_host_net_interface: lo0
+macos_host_ip_addr: 127.0.0.1
+macos_host_interface: en0
+macos_host_gateway_ip_addr: 192.168.1.1
 
+sno_machine_cidr_length: 17
+sno_machine_prefix: "{{ macos_host_ip_addr | ansible.utils.ipsubnet( sno_machine_cidr_length ) | split('/') | first }}"
+sno_ip_addr_reverse: "{{ sno_ip_addr.split('.') | reverse | join('.') }}"

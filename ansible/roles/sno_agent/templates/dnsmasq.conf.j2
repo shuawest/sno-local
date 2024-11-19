@@ -1,0 +1,13 @@
+user=root
+port= 53
+expand-hosts
+log-queries
+log-facility=-
+local=/{{ sno_base_domain }}/
+domain={{ sno_base_domain }}
+address=/apps.{{ sno_cluster_name }}.{{ sno_base_domain }}/{{ sno_ip_addr }}
+address=/api.{{ sno_cluster_name }}.{{ sno_base_domain }}/{{ sno_ip_addr }}
+address=/api-int.{{ sno_cluster_name }}.{{ sno_base_domain }}/{{ sno_ip_addr }}
+address=/m1-ocp.{{ sno_cluster_name }}.{{ sno_base_domain }}/{{ sno_ip_addr }}
+ptr-record={{ sno_ip_addr_reverse }}.in-addr.arpa,sno-master.{{ sno_cluster_name }}.{{ sno_base_domain }}
+rev-server={{ sno_machine_prefix }}/{{ sno_machine_cidr_length }},127.0.0.1

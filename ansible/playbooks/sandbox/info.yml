@@ -11,15 +11,9 @@
       name: utm
       tasks_from: info.yml
     vars:
-      utm_vm_name: sno-csb-arm
+      utm_vm_name: sno-csb-arm1
 
-  - name: Show status
-    debug: 
-      msg: 
-      - "utm_vm_dir_exists: {{ utm_vm_dir_exists }}"
-      - "utm_vm_exists: {{ utm_vm_exists }}"
-      - "utm_vm_started: {{ utm_vm_started }}"
-      - "utm_vm_ip_addr: {{ utm_vm_ip_addr }}"
-      - "utm_vm_mac_addr: {{ utm_vm_mac_addr }}"
-
-
+  - name: Gather hypervisor host facts
+    ansible.builtin.include_role:
+      name: sno_agent
+      tasks_from: hypervisor_facts.yml

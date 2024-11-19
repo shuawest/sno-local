@@ -60,12 +60,12 @@
         configuration: { ¬
           name:"{{ utm_vm_name }}", ¬ 
           drives: { ¬ 
-            { guest size: {{ utm_disk_primary_size_gb * 1024 }} }, ¬ 
-            { guest size: {{ utm_disk_secondary_size_gb * 1024 }} }, ¬ 
+            { guest size: {{ utm_disk_primary_size }} }, ¬ 
+            { guest size: {{ utm_disk_secondary_size }} }, ¬ 
             { removable: true, guest size:65536 } ¬ 
           }, ¬
           network interfaces: { ¬
-            { mode: shared, address: {{ utm_vm_mac_addr }} } ¬
+            { mode: shared, address:"{{ utm_vm_mac_addr }}" } ¬
           } ¬ 
         } ¬ 
       }

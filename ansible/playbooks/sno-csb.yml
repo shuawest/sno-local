@@ -21,11 +21,13 @@
         cluster_name: sno-csb
         vm_name: sno-csb-arm1
         type: openshift                   # openshift | microshift
+        hostedzone: milabs.io
         base_domain: local.milabs.io
         version: 4.17.3
         imageset: openshift-4.17
-        ip_addr: 192.168.64.8             
-        mac_addr: 62:65:35:D1:05:B9       
+        ip_addr: 192.168.64.10  
+        cidr_length: 17           
+        mac_addr: "{{ '52:54:00' | community.general.random_mac }}"       
         arch: aarch64                     # aarch64 | x86_64
         icon: icon-rhlayers.ico           # icon-k8s.ico | icon-microservice.ico | icon-microshift.ico | icon-ocp.ico | icon-redhat.ico | icon-rhlayers.ico
         cores: 10
@@ -35,6 +37,11 @@
         clean_image: true
         ssh_public_key: "{{ vault.csb_ssh_public_key }}"
         pull_secret: "{{ vault.openshift_pull_secret }}"
+
+  - name: Gather hypervisor / host facts
+    ansible.builtin.include_role:
+      name: sno_agent
+      tasks_from: hypervisor_facts.yml
 
   - name: Put Route53 DNS update
     ansible.builtin.include_role:
@@ -47,12 +54,17 @@
         api:
           record: "api.{{ sno.cluster_name }}.{{ sno.base_domain }}"
           ips: "{{ sno.ip_addr }}"
-          zone: "{{ sno.base_domain }}"
+          zone: "{{ sno.hostedzone }}"
+          type: A
+        apiint:
+          record: "api-int.{{ sno.cluster_name }}.{{ sno.base_domain }}"
+          ips: "{{ sno.ip_addr }}"
+          zone: "{{ sno.hostedzone }}"
           type: A
         apps:
-          record: "api.{{ sno.cluster_name }}.{{ sno.base_domain }}"
+          record: "*.apps.{{ sno.cluster_name }}.{{ sno.base_domain }}"
           ips: "{{ sno.ip_addr }}"
-          zone: "{{ sno.base_domain }}"
+          zone: "{{ sno.hostedzone }}"
           type: A
 
   - name: Clean SNO image output - if clean enabled
@@ -72,14 +84,12 @@
       utm_clean_vm: true
       utm_vm_name: "{{ sno.vm_name }}"
       utm_vm_cores: "{{ sno.cores }}"
-      utm_vm_memory: "{{ sno.memory_gb * 1024 }}"
+      utm_vm_memory: "{{ sno.memory_gb | int * 1024 }}"
       utm_vm_mac_addr: "{{ sno.mac_addr }}"
-      utm_icon: "{{ sno.ico }}"
-      utm_disk_primary_size_gb: "{{ root_disk_gb }}"
-      utm_disk_secondary_size_gb: "{{ pvc_disk_gb }}"
+      utm_icon: "{{ sno.icon }}"
+      utm_disk_primary_size_gb: "{{ sno.root_disk_gb }}"
+      utm_disk_secondary_size_gb: "{{ sno.pvc_disk_gb }}"
       utm_qemu_debug_log: true
-
-# NOTE: do I need to get the mac address of the VM?
 
   - name: Generate SNO installer image
     ansible.builtin.include_role:
@@ -89,6 +99,7 @@
       sno_base_domain: "{{ sno.base_domain }}"
       sno_cluster_name: "{{ sno.cluster_name }}"
       sno_ip_addr: "{{ sno.ip_addr }}"
+      sno_machine_cidr_length: "{{ sno.cidr_length }}"
       sno_mac_addr: "{{ sno.mac_addr }}"
       sno_pull_secret: "{{ sno.pull_secret }}"
       sno_ssh_key: "{{ sno.ssh_public_key }}"
@@ -96,14 +107,21 @@
       sno_imageset_ref: "{{ sno.imageset }}"
       sno_arch: "{{ sno.arch }}"
 
-  - debug:
-      msg: "sno_agent_dir: {{ sno_agent_dir }}"
-
-  - name: Set the boot ISO for the UTM VM
+  - name: "Set the boot ISO for the UTM VM: {{ sno_boot_iso }}"
     ansible.builtin.include_role:
       name: utm
       tasks_from: set_iso.yml
     vars:
       utm_vm_name: "{{ sno.vm_name }}"
-      utm_boot_iso: "{{ sno_agent_dir }}/agent.{{ sno.arch }}.iso"
+      utm_boot_iso: "{{ sno_boot_iso }}"
+
+  - name: "Configure and start dnsmasq"
+    ansible.builtin.include_role:
+      name: sno_agent
+      tasks_from: dnsmasq.yml
+    vars:
+      sno_base_domain: "{{ sno.base_domain }}"
+      sno_cluster_name: "{{ sno.cluster_name }}"
+      sno_ip_addr: "{{ sno.ip_addr }}"
+      sno_machine_cidr_length: "{{ sno.cidr_length }}"
 

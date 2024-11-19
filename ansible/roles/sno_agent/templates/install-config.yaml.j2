@@ -13,7 +13,7 @@ networking:
   - cidr: 10.128.0.0/14
     hostPrefix: 23
   machineNetwork:
-  - cidr: 192.168.1.0/24
+  - cidr: {{ sno_machine_prefix }}/{{ sno_machine_cidr_length }}
   networkType: OVNKubernetes
   serviceNetwork:
   - 172.30.0.0/16
@@ -21,5 +21,7 @@ platform:
   none: {}
 bootstrapInPlace:
   installationDisk: /dev/vda
-pullSecret: '{{ sno_pull_secret }}' 
-sshKey: '{{ sno_ssh_key }}'
+pullSecret: |
+  {{ sno_pull_secret | replace("'","\"") }}
+sshKey: |
+  {{ sno_ssh_key }}
