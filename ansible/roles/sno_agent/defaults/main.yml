@@ -34,6 +34,9 @@ macos_host_ip_addr: 127.0.0.1
 macos_host_interface: en0
 macos_host_gateway_ip_addr: 192.168.1.1
 
-sno_machine_cidr_length: 17
+sno_machine_cidr_length: 24
 sno_machine_prefix: "{{ macos_host_ip_addr | ansible.utils.ipsubnet( sno_machine_cidr_length ) | split('/') | first }}"
 sno_ip_addr_reverse: "{{ sno_ip_addr.split('.') | reverse | join('.') }}"
+
+macos_bonjour_service_enabled: false
+macos_dnsmasq_enabled: true

@@ -15,6 +15,23 @@
     dest: "{{ sno_agent_dir }}/dnsmasq.conf"
     mode: '0644'
 
-# - name: Start dnsmasq
-#   ansible.builtin.shell: |
-#     podman run -d --rm -p 53:53/udp -v {{ sno_agent_dir }}/dnsmasq.conf:/etc/dnsmasq.conf --name dnsmasq quay.io/crcont/dnsmasq:latest
+- name: Disable the macos Bonjour service
+  when: not macos_bonjour_service_enabled
+  ansible.builtin.shell: |
+    sudo defaults write /Library/Preferences/com.apple.mDNSResponder.plist NoMulticastAdvertisements -bool true
+    sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist
+    sudo launchctl list | grep mDNSResponder
+
+- name: Enable the macos Bonjour service
+  when: macos_bonjour_service_enabled
+  ansible.builtin.shell: |
+    sudo defaults write /Library/Preferences/com.apple.mDNSResponder.plist NoMulticastAdvertisements -bool false
+    sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist
+    sudo launchctl list | grep mDNSResponder  
+
+- name: Start dnsmasq
+  when: macos_dnsmasq_enabled
+  ansible.builtin.shell: |
+    podman run -d --rm -p 53:53/udp -v {{ sno_agent_dir }}/dnsmasq.conf:/etc/dnsmasq.conf --name dnsmasq quay.io/crcont/dnsmasq:latest
+
+

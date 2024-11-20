@@ -1,0 +1,92 @@
+---
+
+- name: Calculate IP network settings
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+  - name: Set SNO settings
+    ansible.builtin.set_fact:
+      sno:
+        cluster_name: sno-csb
+        vm_name: sno-csb-arm2
+        type: openshift                   # openshift | microshift
+        hostedzone: milabs.io
+        base_domain: local.milabs.io
+        version: 4.17.3
+        imageset: openshift-4.17
+        ip_addr: 192.168.12.10  
+        cidr_length: 24           
+        mac_addr: '2E:CD:45:5B:2B:89'
+        # mac_addr: "{{ community.general.random_mac }}"       
+        arch: aarch64                     # aarch64 | x86_64
+        icon: icon-rhlayers.ico           # icon-k8s.ico | icon-microservice.ico | icon-microshift.ico | icon-ocp.ico | icon-redhat.ico | icon-rhlayers.ico
+        cores: 10
+        memory_gb: 18
+        root_disk_gb: 200
+        pvc_disk_gb: 200 
+        clean_image: true
+ 
+  - name: Calc network DHCP settings
+    ansible.builtin.set_fact:
+      utm_guest_network: "{{ sno.ip_addr | ansible.utils.ipsubnet( sno.cidr_length ) }}"
+      utm_dhcp_start: "{{ sno.ip_addr | ansible.utils.ipmath(-1) }}"
+      utm_dhcp_end: "{{ sno.ip_addr | ansible.utils.ipmath(2) }}"
+      utm_vm_mac_addr: "{{ sno.mac_addr }}"
+      utm_vm_name: sno-csb-arm-network1
+      utm_vm_tmpl_name: sno-csb-arm1
+
+
+  - name: Edit XML of UTM VM app
+    community.general.xml:
+      path: /tmp/config.plist
+      xpath: '/dict/array/string[text()="EA:3D:A1:74:16:1D"]'
+      insertafter: true
+      add_children:
+      - key: VlanGuestAddress
+      - string: "{{ utm_guest_network }}"
+      - key: VlanDhcpStartAddress
+      - string: "{{ utm_dhcp_end }}"
+      - key: VlanDhcpEndAddress
+      - string: "{{ utm_dhcp_start }}"
+    register: updated_utm_output
+
+  - debug:
+      msg: "{{ updated_utm_output }}"
+
+
+  # - debug: 
+  #     msg: |
+  #       osascript -e 'tell application "UTM"
+  #         set tmpl to virtual machine named "{{ utm_vm_tmpl_name }}"
+  #         duplicate tmpl with properties { ¬
+  #           configuration: { ¬
+  #             name:"{{ utm_vm_name }}", ¬ 
+  #             network interfaces: { ¬
+  #               { mode: shared, address: {{ utm_vm_mac_addr }}, guest network: {{ utm_guest_network }}, dhcp start: {{ utm_dhcp_start }}, dhcp end: {{ utm_dhcp_end }} } ¬
+  #             } ¬ 
+  #           } ¬ 
+  #         }
+  #       end tell'
+
+        # <key>Network</key>
+        # <array>
+        #         <dict>
+        #                 <key>Hardware</key>
+        #                 <string>virtio-net-pci</string>
+        #                 <key>IsolateFromHost</key>
+        #                 <false/>
+        #                 <key>MacAddress</key>
+        #                 <string>0A:32:36:57:EC:FC</string>
+        #                 <key>Mode</key>
+        #                 <string>Shared</string>
+        #                 <key>PortForward</key>
+        #                 <array/>
+                        # <key>VlanDhcpEndAddress</key>
+                        # <string>192.168.10.81</string>
+                        # <key>VlanDhcpStartAddress</key>
+                        # <string>192.168.10.79</string>
+                        # <key>VlanGuestAddress</key>
+                        # <string>192.168.10.0/24</string>
+        #         </dict>
+        # </array>

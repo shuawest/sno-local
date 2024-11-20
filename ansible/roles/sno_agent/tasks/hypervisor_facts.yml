@@ -32,9 +32,3 @@
     - "sno_machine_cidr_length: {{ sno_machine_cidr_length }}"
     - "sno_machine_prefix: {{ macos_host_ip_addr | ansible.utils.ipsubnet( sno_machine_cidr_length ) | split('/') | first }}"
 
-- name: Calc subnet
-  debug: 
-    msg: 
-    - "calc_machine_subnet: {{ '172.140.54.6' | ansible.utils.ipsubnet(sno_machine_cidr_length) }}"
-    - "calc_machine_subnet: {{ macos_host_ip_addr | ansible.utils.ipsubnet(sno_machine_cidr_length) }}"
-

@@ -17,6 +17,16 @@
     dest: "{{ sno_agent_dir }}/install-config.yaml"
     mode: '0644'
 
+- name: Copy generated install-config.yaml and agent-config.yaml for archive because the agent deletes them after image creation
+  with_items: 
+    - agent-config.yaml
+    - install-config.yaml
+  ansible.builtin.copy:
+    src: "{{ sno_agent_dir }}/{{ item }}"
+    dest: "{{ sno_agent_dir }}/{{ item }}.gen"
+    remote_src: no
+    mode: '0644'  
+
 - name: Generate agent containerfile
   ansible.builtin.template:
     src: templates/Containerfile

@@ -18,6 +18,13 @@
     remote_src: no
     mode: '0644'
 
+- name: Calc network DHCP settings
+  ansible.builtin.set_fact:
+    cacheable: true
+    utm_guest_network: "{{ utm_ip_addr | ansible.utils.ipsubnet( utm_cidr_length ) }}"
+    utm_dhcp_start: "{{ utm_ip_addr | ansible.utils.ipmath(-1) }}"
+    utm_dhcp_end: "{{ utm_ip_addr | ansible.utils.ipmath(1) }}"
+
 - name: Show UTM VM info
   debug:
     msg: 
@@ -27,4 +34,8 @@
     - "utm_iso_guid: {{ utm_iso_guid }}"
     - "utm_disk_primary_guid: {{ utm_disk_primary_guid }}"
     - "utm_disk_secondary_guid: {{ utm_disk_secondary_guid }}"
+    - "utm_guest_network: {{ utm_guest_network }}"
+    - "utm_dhcp_start: {{ utm_dhcp_start }}"
+    - "utm_dhcp_end: {{ utm_dhcp_end }}"
+
 
