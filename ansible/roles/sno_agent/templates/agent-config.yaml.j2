@@ -3,6 +3,9 @@ kind: AgentConfig
 metadata:
   name: {{ sno_cluster_name }}
 rendezvousIP: {{ sno_ip_addr }}
+#additionalNTPSources:
+#  - 198.162.100.10
+#  - 198.162.100.11
 hosts: 
   - hostname: node
     interfaces:

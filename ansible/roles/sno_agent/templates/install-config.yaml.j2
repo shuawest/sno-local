@@ -21,5 +21,6 @@ platform:
   none: {}
 bootstrapInPlace:
   installationDisk: /dev/vda
+  rendezvousIP: {{ sno_ip_addr }}
 pullSecret: '{{ sno_pull_secret | replace("'","\"") | replace("\n","") }}'
 sshKey: '{{ sno_ssh_key }}'
