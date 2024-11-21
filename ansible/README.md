@@ -13,7 +13,10 @@
 - Repo Single Node OpenShift on ARM Mac
   https://github.com/tnk4on/sno-on-arm-mac
 
-- minimum SNO requirements
+- Troubleshooting Installations
+  https://docs.openshift.com/container-platform/4.17/support/troubleshooting/troubleshooting-installations.html 
+
+- Minimum SNO requirements
   - vCPUs:   8 to 10
   - memory:  16 GB
   - storage: 120 GB

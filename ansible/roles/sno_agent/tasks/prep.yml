@@ -12,7 +12,17 @@
 
 - name: Create agent mirror dir
   ansible.builtin.file:
+    path: "{{ sno_mirror_dir }}"
+    state: directory
+
+- name: Create agent mirror dir
+  ansible.builtin.file:
     path: "{{ sno_agent_dir }}/mirror"
+    state: directory
+
+- name: Create agent image_cache
+  ansible.builtin.file:
+    path: "{{ sno_image_cache_dir }}"
     state: directory
 
 - name: Create agent image_cache

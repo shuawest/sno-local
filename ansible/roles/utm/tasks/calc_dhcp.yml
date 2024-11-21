@@ -1,0 +1,23 @@
+---
+
+- name: Calc network DHCP settings
+  ansible.builtin.set_fact:
+    cacheable: true
+    utm_guest_network: "{{ utm_ip_addr | ansible.utils.ipsubnet( utm_cidr_length ) }}"
+    utm_dhcp_start: "{{ utm_ip_addr | ansible.utils.ipmath(-1) }}"
+    utm_dhcp_end: "{{ utm_ip_addr | ansible.utils.ipmath(1) }}"
+
+- name: Show UTM VM info
+  debug:
+    msg: 
+    - "Continuing tasks as the directory '{{ prep_utm_vm_dir }}' does not exist."
+    - "utm_vm_mac_addr: {{ utm_vm_mac_addr }}"
+    - "utm_vm_uuid: {{ utm_vm_uuid }}"
+    - "utm_iso_guid: {{ utm_iso_guid }}"
+    - "utm_disk_primary_guid: {{ utm_disk_primary_guid }}"
+    - "utm_disk_secondary_guid: {{ utm_disk_secondary_guid }}"
+    - "utm_guest_network: {{ utm_guest_network }}"
+    - "utm_dhcp_start: {{ utm_dhcp_start }}"
+    - "utm_dhcp_end: {{ utm_dhcp_end }}"
+
+

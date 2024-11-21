@@ -13,6 +13,8 @@
     utm_vm_exists: false  
     utm_vm_ip_addr: unknown  
 
+# Fetch VM status
+
 - name: UTM VM Status
   when: utm_dir_status.stat.exists
   ansible.builtin.shell: |
@@ -29,9 +31,12 @@
 - name: Set VM status fact
   when: utm_dir_status.stat.exists
   set_fact: 
+    cacheable: true
     utm_vm_dir_exists: "{{ utm_dir_status.stat.exists }}"
     utm_vm_started: "{{ 'started' in utm_vm_status_output.stdout | default(false) }}" 
     utm_vm_exists: "{{ 'absent' not in utm_vm_status_output.stdout }}"  
+
+# Fetch MAC and IP 
 
 - name: Get VM mac address
   when: utm_vm_exists
@@ -44,18 +49,6 @@
     end tell'
   register: utm_vm_mac_addr_output
 
-    # osascript -e 'tell application "UTM"
-    #   set vm to virtual machine named "sno-csb-arm"
-    #   set config to configuration of vm
-    #   set net to item 1 of network interfaces of config
-    #   get address of net
-    # end tell'
-
-- name: Get VM mac address
-  when: utm_vm_exists
-  set_fact: 
-    utm_vm_mac_addr: "{{ utm_vm_mac_addr_output.stdout | trim }}"
-
 - name: Get IP Address of VM if started
   when: utm_vm_started 
   ansible.builtin.shell: |
@@ -66,9 +59,18 @@
     end tell'
   register: utm_vm_ip_addr_output
 
+# Set and emit facts
+
+- name: Get VM mac address
+  when: utm_vm_exists
+  set_fact: 
+    cacheable: true
+    utm_vm_mac_addr: "{{ utm_vm_mac_addr_output.stdout | trim }}"
+
 - name: Get IP Address of VM if started
   when: utm_vm_started
   set_fact: 
+    cacheable: true
     utm_vm_ip_addr: "{{ utm_vm_ip_addr_output.stdout}}"
 
 - name: Get IP Address of VM if started
@@ -82,6 +84,7 @@
     - "utm_vm_dir_exists: {{ utm_vm_dir_exists}}"
     - "utm_vm_exists: {{ utm_vm_exists }}"
     - "utm_vm_started: {{ utm_vm_started }}"
-    - "ip_address: {{ utm_vm_ip_addr }}"
+    - "utm_vm_ip_addr: {{ utm_vm_ip_addr }}"
+    - "utm_vm_mac_addr: {{ utm_vm_mac_addr }}"
 
 

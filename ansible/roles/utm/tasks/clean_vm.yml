@@ -7,15 +7,8 @@
     path: "{{ clean_utm_vm_dir }}"
   register: utm_dir_status
 
-- name: Assert that the directory does not exist
-  when: not utm_clean_vm
-  ansible.builtin.assert:
-    that:
-    - not utm_dir_status.stat.exists
-    fail_msg: "'{{ clean_utm_vm_name }}' already exists and clean is set to false. Aborting."
-    success_msg: "'{{ clean_utm_vm_name }}' does not exist. Proceeding."
-
 - name: Delete the VM
+  ignore_errors: true
   when: utm_dir_status.stat.exists
   ansible.builtin.shell: |
     osascript -e 'tell application "UTM"

@@ -1,0 +1,22 @@
+---
+
+- name: Ensure agent image_cache directory exists
+  ansible.builtin.file:
+    path: "{{ sno_image_cache_dir }}"
+    state: directory
+
+- name: Get RHCOS image URL using openshift-install tool
+  ansible.builtin.shell: |
+    openshift-install coreos print-stream-json | grep location | grep iso | grep {{ sno_arch }} | cut -d\" -f4
+  register: rhcos_image_url_output
+
+- name: Emit rhcos_image_path 
+  ansible.builtin.set_fact:
+    cacheable: true
+    rhcos_image_url: "{{ rhcos_image_url_output.stdout_lines[0] | trim }}"
+    rhcos_image_path: "{{ sno_image_cache_dir }}/{{ sno_rhcos_image_name }}"
+
+- name: Download RHCOS image
+  ansible.builtin.get_url:
+    url: "{{ rhcos_image_url }}"
+    dest: "{{ rhcos_image_path }}"

@@ -19,4 +19,5 @@
 
 - name: Set VM status fact
   set_fact: 
+    cacheable: true
     utm_vm_started: false 

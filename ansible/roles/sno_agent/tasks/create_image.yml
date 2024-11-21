@@ -27,6 +27,20 @@
     remote_src: no
     mode: '0644'  
 
+
+- name: Create image_cache under staging directory
+  ansible.builtin.file:
+    path: "{{ sno_agent_dir }}/image_cache"
+    state: directory
+
+- name: Copy coreos iso to image_cache directory under staging directory
+  ansible.builtin.copy:
+    src: "{{ sno_image_cache_dir }}/{{ sno_rhcos_image_name }}"
+    dest: "{{ sno_agent_dir }}/image_cache/coreos-{{ sno_arch }}.iso"
+    remote_src: no
+    mode: '0644'
+
+
 - name: Generate agent containerfile
   ansible.builtin.template:
     src: templates/Containerfile
@@ -37,6 +51,7 @@
   ansible.builtin.shell: |
     export OCP_VERSION={{ sno_version }}
     podman build -f {{ sno_agent_dir }}/Containerfile -t openshift-install --build-arg VERSION=${OCP_VERSION}
+
 
 - name: Create image
   ansible.builtin.shell: |
@@ -51,5 +66,3 @@
   ansible.builtin.set_fact:
     cacheable: true
     sno_boot_iso: "{{ sno_agent_dir }}/agent.{{ sno_arch }}.iso"
-
-

@@ -1,0 +1,17 @@
+---
+
+- name: Set MAC Address of the VM
+  ansible.builtin.shell: |
+    osascript -e 'tell application "UTM"
+      set vm to virtual machine named "{{ utm_vm_name }}"
+      set config to configuration of vm
+      set net to item 1 of network interfaces of config
+      set address of net to "{{ utm_vm_mac_addr }}"
+      update configuration of vm with config
+    end tell'
+
+
+
+
+
+

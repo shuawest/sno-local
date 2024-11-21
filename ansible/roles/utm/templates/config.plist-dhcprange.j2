@@ -64,11 +64,17 @@
 			<key>IsolateFromHost</key>
 			<{{ utm_net_isolate | lower }}/>
 			<key>MacAddress</key>
-			<string>{{ utm_vm_mac_addr }}</string>
+			<string>{{ '52:54:00' | community.general.random_mac }}</string>
 			<key>Mode</key>
 			<string>{{ utm_net_mode }}</string>
 			<key>PortForward</key>
 			<array/>
+			<key>VlanDhcpEndAddress</key>
+			<string>{{ utm_dhcp_end }}</string>
+			<key>VlanDhcpStartAddress</key>
+			<string>{{ utm_dhcp_start }}</string>
+			<key>VlanGuestAddress</key>
+			<string>{{ utm_guest_network }}</string>
 		</dict>
 	</array>
 	<key>QEMU</key>

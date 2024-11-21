@@ -14,6 +14,10 @@ sno_staging_dir: "{{ role_path }}/../../target"
 
 # inferred variables
 sno_agent_dir: "{{ sno_staging_dir }}/{{ sno_cluster_name }}"
+sno_image_cache_dir: "{{ sno_staging_dir }}/image_cache"
+sno_rhcos_image_name: "rhcos-{{ sno_arch }}-live.iso"
+sno_mirror_dir: "{{ sno_staging_dir }}/mirror"
+
 sno_api_dns: "api.{{ sno_cluster_name }}.{{ sno_base_domain }}"
 sno_api_url: "https://{{ sno_api_dns }}:6443"
 sno_apps_dns: "apps.{{ sno_cluster_name }}.{{ sno_base_domain }}"
