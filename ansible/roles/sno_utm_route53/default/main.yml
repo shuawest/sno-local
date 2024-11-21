@@ -1,0 +1,32 @@
+--- 
+
+vault:
+  route53_user_access_key_id: 
+  route53_user_secret_access_key: 
+  milabs_route53_hostedzone_id: 
+  github_pat: 
+  csb_ssh_public_key: 
+  openshift_pull_secret: 
+
+sno:
+  cluster_name: sno
+  vm_name: sno-arm1
+  type: openshift                   # openshift | microshift
+  hostedzone: milabs.io
+  base_domain: local.milabs.io
+  version: 4.17.3
+  imageset: openshift-4.17
+  cidr_length: 24       
+  arch: aarch64                     # aarch64 | x86_64
+  icon: icon-rhlayers.ico           # icon-k8s.ico | icon-microservice.ico | icon-microshift.ico | icon-ocp.ico | icon-redhat.ico | icon-rhlayers.ico
+  cores: 10
+  memory_gb: 18
+  root_disk_gb: 200
+  pvc_disk_gb: 200 
+  clean_image: true
+  ssh_public_key: 
+  pull_secret: 
+
+  # ip_addr: 192.168.30.40            
+  # mac_addr: '86:A8:41:CB:99:BF'
+  # mac_addr: "{{ '86:A8:41' | community.general.random_mac }}" 

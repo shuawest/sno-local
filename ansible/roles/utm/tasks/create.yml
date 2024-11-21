@@ -52,6 +52,23 @@
 ###
 # clone the template, and set drives
 
+- name: Create the VM from the template
+  ansible.builtin.shell: |
+    osascript -e 'tell application "UTM"
+      set tmpl to virtual machine named "{{ utm_vm_tmpl_name }}"
+      duplicate tmpl with properties { ¬
+        configuration: { ¬
+          name:"{{ utm_vm_name }}", ¬ 
+          drives: { ¬ 
+            { guest size: {{ utm_disk_primary_size }} }, ¬ 
+            { guest size: {{ utm_disk_secondary_size }} }, ¬ 
+            { removable: true, guest size:65536 } ¬ 
+          }, ¬
+          network interfaces: { mode:shared } ¬ 
+        } ¬ 
+      }
+    end tell'
+
 # - name: Create the VM from the template
 #   ansible.builtin.shell: |
 #     osascript -e 'tell application "UTM"
@@ -68,22 +85,6 @@
 #         } ¬ 
 #       }
 #     end tell'
-
-- name: Create the VM from the template
-  ansible.builtin.shell: |
-    osascript -e 'tell application "UTM"
-      set tmpl to virtual machine named "{{ utm_vm_tmpl_name }}"
-      duplicate tmpl with properties { ¬
-        configuration: { ¬
-          name:"{{ utm_vm_name }}", ¬ 
-          drives: { ¬ 
-            { guest size: {{ utm_disk_primary_size }} }, ¬ 
-            { guest size: {{ utm_disk_secondary_size }} }, ¬ 
-            { removable: true, guest size:65536 } ¬ 
-          } ¬
-        } ¬ 
-      }
-    end tell'
 
 ###
 # clean up the template

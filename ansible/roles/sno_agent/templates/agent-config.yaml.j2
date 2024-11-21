@@ -4,31 +4,9 @@ metadata:
   name: {{ sno_cluster_name }}
 rendezvousIP: {{ sno_ip_addr }}
 hosts: 
-  - hostname: sno
+  - hostname: node
     interfaces:
       - name: {{ sno_net_interface }}
         macAddress: {{ sno_mac_addr }}
     rootDeviceHints: 
       deviceName: {{ sno_root_device }}
-    networkConfig: 
-      interfaces:
-        - name: {{ sno_net_interface }}
-          type: ethernet
-          state: up
-          mac-address: {{ sno_mac_addr }}
-          ipv4:
-            enabled: true
-            address:
-              - ip: {{ sno_ip_addr }}
-                prefix-length: {{ sno_machine_cidr_length }}
-            dhcp: false
-      dns-resolver:
-        config:
-          server:
-            - {{ macos_host_gateway_ip_addr }}
-      routes:
-        config:
-          - destination: 0.0.0.0/0
-            next-hop-address: {{ macos_host_ip_addr }}
-            next-hop-interface: {{ macos_host_interface }}
-            table-id: 254

@@ -10,15 +10,15 @@
     loop_var: recname
   vars: 
     dnsrecord: "{{ route53_subdomain_records[recname] }}"
-  community.aws.route53:
+  amazon.aws.route53:
     aws_access_key: "{{ route53_subdomain_user_access_key }}"
     aws_secret_key: "{{ route53_subdomain_user_secret }}"
     state: present
     record: "{{ dnsrecord.record }}"
-    value: "{{ dnsrecord.ips }}"
+    value: "{{ dnsrecord.value }}"
     zone: "{{ dnsrecord.zone }}"
     type: "{{ dnsrecord.type }}"
     ttl: 7200
     overwrite: yes
-    wait: yes
+    wait: "{{ route53_register_wait }}"
 

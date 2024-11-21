@@ -2,6 +2,8 @@
 
 route53_subdomain_name: rhtfsi
 
+route53_register_wait: yes
+
 secrets_dir: ~/.ansible/secrets
 route53_subdomain_vault_name: "{{ route53_subdomain_name }}-subdomain-vault"
 

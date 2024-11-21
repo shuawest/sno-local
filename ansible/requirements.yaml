@@ -7,8 +7,8 @@ collections:
 - community.general
 - community.network
 - ansible.netcommon
-- community.aws
-
+# - community.aws
+- amazon.aws
 
 
 

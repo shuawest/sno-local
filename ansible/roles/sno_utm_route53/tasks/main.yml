@@ -1,0 +1,167 @@
+---
+
+- name: Gather hypervisor / host facts
+  ansible.builtin.include_role:
+    name: sno_agent
+    tasks_from: hypervisor_facts.yml
+  vars: 
+    sno_machine_cidr_length: "{{ sno.cidr_length }}"
+
+- name: Create SNO UTM VM
+  ansible.builtin.include_role:
+    name: utm
+    tasks_from: create.yml
+  vars:
+    utm_clean_vm: true
+    utm_vm_name: "{{ sno.vm_name }}"
+    utm_vm_cores: "{{ sno.cores }}"
+    utm_vm_memory: "{{ sno.memory_gb | int * 1024 }}"
+    utm_cidr_length: "{{ sno.cidr_length }}"
+    utm_icon: "{{ sno.icon }}"
+    utm_disk_primary_size_gb: "{{ sno.root_disk_gb }}"
+    utm_disk_secondary_size_gb: "{{ sno.pvc_disk_gb }}"
+    utm_qemu_debug_log: true
+
+- name: Download RHCOS image
+  ansible.builtin.include_role:
+    name: sno_agent
+    tasks_from: download_rhcos.yml
+  vars: 
+    sno_arch: "{{ sno.arch }}"
+
+- name: Check that the RHCOS image exists
+  stat:
+    path: "{{ rhcos_image_path }}"
+  register: rhcos_image_exists_stat
+- name: Assert that the RHCOS image exists
+  ansible.builtin.assert:
+    that: rhcos_image_exists_stat.stat.exists
+
+# - name: Let UTM register VM before setting ISO
+#   pause: 
+#     seconds: 5
+
+- name: "Set the boot ISO for the RHCOS image: {{ rhcos_image_path }}"
+  ansible.builtin.include_role:
+    name: utm
+    tasks_from: set_iso.yml
+  vars:
+    utm_vm_name: "{{ sno.vm_name }}"
+    utm_boot_iso: "{{ rhcos_image_path }}"
+
+- name: Start the RHCOS live image to fetch the MAC and IP address
+  ansible.builtin.include_role:
+    name: utm
+    tasks_from: start_vm.yml
+  vars:
+    utm_vm_name: "{{ sno.vm_name }}"
+    utm_start_seconds: 20
+
+- name: Show MAC and IP address
+  debug:
+    msg:  
+    - "IP: {{ utm_vm_ip_addr }}, MAC: {{ utm_vm_mac_addr }}"    
+
+- name: Stop UTM using the RHCOS image 
+  ansible.builtin.include_role:
+    name: utm
+    tasks_from: stop_vm.yml
+  vars:
+    utm_vm_name: "{{ sno.vm_name }}"
+    utm_start_seconds: 20
+
+- name: Put Route53 DNS update
+  ansible.builtin.include_role:
+    name: route53_subdomain
+  vars:
+    route53_register_wait: no
+    route53_subdomain_action: create
+    route53_subdomain_user_access_key: "{{ route53_user_access_key_id }}"
+    route53_subdomain_user_secret: "{{ route53_user_secret_access_key }}"
+    route53_subdomain_records:
+      node_forward:
+        record: "node.{{ sno.cluster_name }}.{{ sno.base_domain }}"
+        value: "{{ utm_vm_ip_addr }}"
+        zone: "{{ sno.hostedzone }}"
+        type: A
+      # node_reverse:
+      #   record: "{{ utm_vm_ip_addr.split('.') | reverse | join('.') }}.in-addr.arpa"
+      #   value: "node.{{ sno.cluster_name }}.{{ sno.base_domain }}."
+      #   zone: "{{ sno.hostedzone }}"
+      #   type: PTR
+      api:
+        record: "api.{{ sno.cluster_name }}.{{ sno.base_domain }}"
+        value: "{{ utm_vm_ip_addr }}"
+        zone: "{{ sno.hostedzone }}"
+        type: A
+      apiint:
+        record: "api-int.{{ sno.cluster_name }}.{{ sno.base_domain }}"
+        value: "{{ utm_vm_ip_addr }}"
+        zone: "{{ sno.hostedzone }}"
+        type: A
+      apps:
+        record: "*.apps.{{ sno.cluster_name }}.{{ sno.base_domain }}"
+        value: "{{ utm_vm_ip_addr }}"
+        zone: "{{ sno.hostedzone }}"
+        type: A
+
+- name: Clean SNO image output - if clean enabled
+  when: sno.clean_image
+  ansible.builtin.include_role:
+    name: sno_agent
+    tasks_from: clean.yml
+  vars:
+    sno_base_domain: "{{ sno.base_domain }}"
+    sno_cluster_name: "{{ sno.cluster_name }}"
+
+- name: Generate SNO installer image
+  ansible.builtin.include_role:
+    name: sno_agent
+    tasks_from: create_image.yml
+  vars:
+    sno_base_domain: "{{ sno.base_domain }}"
+    sno_cluster_name: "{{ sno.cluster_name }}"
+    sno_ip_addr: "{{ utm_vm_ip_addr }}"
+    sno_mac_addr: "{{ utm_vm_mac_addr }}"
+    sno_machine_cidr_length: "{{ sno.cidr_length }}"
+    sno_pull_secret: "{{ sno.pull_secret }}"
+    sno_ssh_key: "{{ sno.ssh_public_key }}"
+    sno_version: "{{ sno.version }}"
+    sno_imageset_ref: "{{ sno.imageset }}"
+    sno_arch: "{{ sno.arch }}"
+
+- name: "Set the boot ISO for the UTM VM: {{ sno_boot_iso }}"
+  ansible.builtin.include_role:
+    name: utm
+    tasks_from: set_iso.yml
+  vars:
+    utm_vm_name: "{{ sno.vm_name }}"
+    utm_boot_iso: "{{ sno_boot_iso }}"
+
+# # - name: "Configure and start dnsmasq"
+# #   ansible.builtin.include_role:
+# #     name: sno_agent
+# #     tasks_from: dnsmasq.yml
+# #   vars:
+# #     sno_base_domain: "{{ sno.base_domain }}"
+# #     sno_cluster_name: "{{ sno.cluster_name }}"
+# #     sno_ip_addr: "{{ sno.ip_addr }}"
+# #     sno_machine_cidr_length: "{{ sno.cidr_length }}"
+
+- name: "Start the UTM VM: {{ utm_vm_name }}"
+  ansible.builtin.include_role:
+    name: utm
+    tasks_from: start_vm.yml
+  vars:
+    utm_vm_name: "{{ sno.vm_name }}"
+    utm_start_seconds: 30
+
+- name: "Install OpenShift with the agent"
+  ansible.builtin.include_role:
+    name: sno_agent
+    tasks_from: install.yml
+  vars:
+    sno_base_domain: "{{ sno.base_domain }}"
+    sno_cluster_name: "{{ sno.cluster_name }}"
+    sno_ip_addr: "{{ utm_vm_ip_addr }}"
+    sno_arch: "{{ sno.arch }}"

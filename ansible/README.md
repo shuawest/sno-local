@@ -28,22 +28,34 @@
 
 
 
-## Constraints
-* Unable to set a static IP on a shared network
-* MAC Addresses and IPs cannot be reused
-* You can set the address ranges in the advanced settings
-* 
+## Troubleshooting
+
+### 1. "UTM got an error: The file couldn’t be opened because it doesn’t exist."
+
+Cause: This error occors while creating a UTM VM using apple script. It is because UTM sees two VMs with the same name.  
+
+Resolution: Manually delete the VMs in UTM with the target name. Restart the UTM app. Ensure the VMs with the target name are fully removed. Start the provisioning script again.
 
 
-## New Approach
+### 2. "Unable to ping quay.io" during the initial agent installer boot process
 
-1. download coreos to staging directory
-2. create a VM in UTM - taking networking defaults
-3. attach and start coreos basic image
-4. use apple script to scrape the IP & Mac address, and emit to cachable facts
-5. use ip & mac in agent image create
-6. attach and start the agent rhcos image 
-7. use agent installer to complete
+Cause: The network settings in the install-config.yml and/or agent-config.yml are causing the target VM to not be able to reach the internet. To troubleshoot this issue, first skip the checks and continue the boot from the terminal menu using the quit button.
+Then, ssh into the machine from the macos hypervisor host `ssh core@<vm_ip_addr>`. Use the nmcli tool `sudo nmcli con print` and`sudo nmcli con edit enp0s1` to review and modify the network settings until you can reach the internet using `ping quay.io` from the host. Incorporate the configuration changes into `roles/sno_agent/templates/agent-config.yml.j2`.
 
+### 3. Watching installation during bootstrap phase
 
+```
+ssh core@<vm_ip_addr>
+journalctl -b -f -u release-image.service -u bootkube.service
+```
+
+### 4. "INFO Cannot access Rendezvous Host. There may be a network configuration problem, check console for additional info"
+
+Reverse lookup is needed for SNO if DHCP isn't providing the name resolution. CHeck that you have a PTR record for your node, and ensure the sno host can resolve forward and reverse:
+
+```
+ssh core@<vm_ip_addr>
+dig sno.<myhost>.local.milabs.io
+dig -X <vm_ip_addr>
+```
 
