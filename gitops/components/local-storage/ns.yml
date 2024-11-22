@@ -1,0 +1,12 @@
+apiVersion: project.openshift.io/v1
+kind: Project
+metadata:
+  name: openshift-local-storage
+  labels:
+    kubernetes.io/metadata.name: openshift-local-storage
+    openshift.io/cluster-monitoring: 'true'
+  annotations:
+    argocd.argoproj.io/sync-wave: "-13"
+spec:
+  finalizers:
+    - kubernetes

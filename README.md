@@ -7,13 +7,22 @@ certificates.
 Bootstrap configuration using gitops across multiple installs.
 
 
-FIX machine network CIDR in agent/install config to match
-   consider reusing or redoing calculation
+## Roadmap
 
-MAC still getting rewritten 
-   consider booting coreos first and getting assigned IP and Mac instead of setting explicitly
+Ansible
+* Bootstrap GitOps
+* Select projects to gitops sync in inventory
+* Configuration at inventory level instead of in playbook
+* Add cluster provisioning summary
+* Cluster diagnostics playbooks
+* Cluster backup and restore playbooks
+* Apple Hypervisor intead of QEMU
+* Determine if it is possible to clone and rename cluster
+* Use mirror installation for faster provisioning
+* Provision both OpenShift and Microshift
 
-Register sno machine IP address in Route53
-    change name of machine in install-config to sno from sno-master
+GitOps
+* Local storage
+* LVM storage
 
 

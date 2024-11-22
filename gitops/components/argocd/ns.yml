@@ -1,0 +1,11 @@
+apiVersion: project.openshift.io/v1
+kind: Project
+metadata:
+  name: openshift-gitops
+  labels:
+    kubernetes.io/metadata.name: openshift-gitops
+  annotations:
+    argocd.argoproj.io/sync-wave: "-13"
+spec:
+  finalizers:
+  - kubernetes

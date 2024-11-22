@@ -2,7 +2,85 @@
 # Apple UTM Hypervisor Configuration
 
 
-## Reference Resources
+## I. Usage
+
+### 1. Provision a cluster
+
+```
+# Clone the repository 
+git clone https://github.com/shuawest/sno-local.git
+
+# Edit the inventory for your cluster name
+cd sno-local/ansible
+cp inventories/group_vars/sno-local.yml.example inventories/group_vars/<mycluster_name>.yml
+
+# Configure your secrets - choose between using an ansible-vault or 1Password
+...
+
+# Configure your SNO cluster settings 
+vi inventories/group_vars/<mycluster_name>.yml
+
+# If first time running - prepare ansible
+pip install -r requirements.txt
+ansible-galaxy collection install -r requirements.yaml
+
+# Provision the cluster 
+./ap.sh playbook/sno.yml
+```
+
+## II. Setup 
+
+1. Install UTM on MacOS
+   https://mac.getutm.app/ 
+  
+2. Install Podman / Podman Desktop for MacOS
+
+3. Download command line tools and install to /usr/local/bin from https://console.redhat.com/openshift/downloads
+
+  - Ansible
+    `brew install ansible`
+  - OpenShift for arm insaller - MacOS / arm64
+    https://mirror.openshift.com/pub/openshift-v4/aarch64/clients/ocp/stable/openshift-install-mac-arm64.tar.gz
+  - OpenShift client
+    https://mirror.openshift.com/pub/openshift-v4/aarch64/clients/ocp/stable/openshift-client-mac-arm64.tar.gz
+    or `brew install openshift-cli`
+  - Helm 3 CLI
+    https://mirror.openshift.com/pub/openshift-v4/clients/helm/latest/helm-darwin-arm64.tar.gz
+    or `brew install helm`
+  - ODO Developer CLI for OpenShift
+    https://developers.redhat.com/content-gateway/rest/mirror/pub/openshift-v4/clients/odo/latest/odo-darwin-arm64.tar.gz
+    or `brew install odo`
+  - ArgoCD GitOps CLI
+    https://developers.redhat.com/content-gateway/rest/browse/pub/openshift-v4/clients/openshift-gitops/latest/argocd-macos-arm64.tar.gz
+    or `brew install argocd`
+  - Tekton CLI
+    https://mirror.openshift.com/pub/openshift-v4/clients/pipeline/latest/tkn-macos-arm64.tar.gz
+    or `brew install tektoncd-cli`
+
+4. Configure your secrets in an ansible-vault or 1Password
+
+## Roadmap
+
+Ansible
+* Bootstrap GitOps
+* Select projects to gitops sync in inventory
+* Configuration at inventory level instead of in playbook
+* Add cluster provisioning summary
+* Cluster diagnostics playbooks
+* Cluster backup and restore playbooks
+* Apple Hypervisor intead of QEMU
+* Determine if it is possible to clone and rename cluster
+* Use mirror installation for faster provisioning
+* Provision both OpenShift and Microshift
+
+GitOps
+* Local storage
+* LVM storage
+
+
+
+
+## IV. Reference Resources
 
 - Single-Node OpenShift
   https://docs.openshift.com/container-platform/4.17/installing/nstalling_sno/install-sno-installing-sno.html
@@ -28,7 +106,7 @@
 
 
 
-## Troubleshooting
+## V. Troubleshooting
 
 ### 1. "UTM got an error: The file couldn’t be opened because it doesn’t exist."
 

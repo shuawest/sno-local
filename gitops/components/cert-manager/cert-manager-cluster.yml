@@ -1,0 +1,16 @@
+apiVersion: operator.openshift.io/v1alpha1
+kind: CertManager
+metadata:
+  name: cluster
+  finalizers:
+  - cert-manager-operator.operator.openshift.io/cert-manager-cainjector-deployment
+  - cert-manager-operator.operator.openshift.io/cert-manager-webhook-deployment
+  - cert-manager-operator.operator.openshift.io/cert-manager-controller-deployment
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  logLevel: Normal
+  managementState: Managed
+  observedConfig: null
+  operatorLogLevel: Normal
+  unsupportedConfigOverrides: null
