@@ -21,8 +21,8 @@
   - name: Set SNO settings
     ansible.builtin.set_fact:
       csb:
-        cluster_name: csb
-        vm_name: csb1
+        cluster_name: snoair
+        vm_name: snoair1
         type: openshift                  
         hostedzone: milabs.io
         base_domain: jowest.milabs.io
