@@ -1,0 +1,37 @@
+---
+
+- name: Configure AWS access account
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+  
+
+
+
+
+
+
+
+
+  - name: Update 1Password with subdomain user secrets
+    when: vault_type == '1password'
+    ansible.builtin.include_role:
+      name: vault_utils_1password
+      tasks_from: set_item.yml
+    vars:
+      vault: MILabs.io
+      category: server
+      section: "{{ subdomain }}-{{ hostedzone }}-subdomain"
+      account: "{{ vault_1password_mapping.account }}"
+      name: sno-local-vault
+      type: password
+      field: "route53_{{ subdomain }}_access_key_id"
+      value: "{{ item.value }}"
+    with_items:
+      - name: "{{ vault_1password_mapping.route53_user_access_key_id.name  }}"
+        field: "{{ vault_1password_mapping.route53_user_access_key_id.field }}"
+        value: "{{ route53_subdomain_user_access_key }}"
+      - name: "{{ vault_1password_mapping.route53_user_secret_access_key.name  }}"
+        field: "{{ vault_1password_mapping.route53_user_secret_access_key.field }}"
+        value: "{{ route53_subdomain_user_secret }}"

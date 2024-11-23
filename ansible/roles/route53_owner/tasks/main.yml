@@ -6,9 +6,6 @@
 - import_tasks: gen_access_key.yml
   when: route53_owner_action == 'create' or route53_owner_action == 'rotate' 
 
-- import_tasks: write_subdomain_vault.yml
-  when: (route53_owner_action == 'create' or route53_owner_action == 'rotate') and route53_credentials_write_vault 
-
 - import_tasks: show_subdomain_vault.yml
   when: (route53_owner_action == 'create' or route53_owner_action == 'rotate') and route53_credentials_show
 

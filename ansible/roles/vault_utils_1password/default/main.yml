@@ -1,20 +1,35 @@
 --- 
 
-# required for fetching a secret
+###
+# Role arguments for setting secrets
+
+# Required for fetching a secret
 name:             # Vault item name
 field:            # Field within the vault to update
 
-# Required for setting a secret, including the above
-vault:            # Vault name (group of secrets within 1password)
+# Required for setting a secret, as weel as the above fields
 value:            # Value to set in the field
 
 # Optional for setting a secret
-account:          # Leave blank for default or single account, if you have multiple specify the name
 section:          # Section of the item for the field
 category: login   # Category of secret - login | server  
 type: password    # password | txt
 
+# Set additional fields in item and section
 additonal_fields:           # Add additional fields to the secret, such as the website
 # - field: website
+#   type: text
 #   value: https://console-openshift-console.apps.csb.jowest.milabs.io/
+
+
+###
+# Settings to configure at client level of the inventory
+
+# default 1Password CLI account
+# - it is recommended ot use a separate account for automation so that automation can't get to your other secrets
+onepass_account: my.1password.com
+
+# Vault group name in 1Password the account has access to
+# - the vault is the group within 1Password where items are created and fetched
+onepass_vault: MILabs.io
 

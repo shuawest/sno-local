@@ -1,28 +1,31 @@
 ---
 
-- name: Configure AWS access account
-  hosts: localhost
+- name: Configure AWS access account and credentials
+  hosts: client
   gather_facts: no
   tasks:
 
-  - name: Fetch AWS admin credentials
-    when: vault_type == '1password'
-    ansible.builtin.import_playbook: admin-vault-1password.yml
+  - name: Fetch secrets from 1Password
+    when: onepass_enabled
+    ansible.builtin.set_fact:
+      route53_owner_access_key: "{{ lookup('community.general.onepassword', onepass_aws_admin_vault_item, field=onepass_aws_admin_access_key_field) }}"
+      route53_owner_secret: "{{ lookup('community.general.onepassword', onepass_aws_admin_vault_item, field=onepass_aws_admin_secret_field) }}"
+
 
   - name: Gather facts for AWS subdomain
     ansible.builtin.set_fact:
-      route53_owner_access_key: "{{ admin_vault.route53_owner_access_key }}"
-      route53_owner_secret: "{{ admin_vault.route53_owner_secret }}"
       subdomain: "{{ cluster.subdomain }}"
       hostedzone: "{{ cluster.hostedzone }}"
       hostedzone_id: "{{ cluster.hostedzone_id }}"
 
-  - name: Fetch secrets
-    ansible.builtin.set_fact:
-      route53_owner_access_key: "{{ lookup('community.general.onepassword', onepassword_admin_vault_name, field='aws_admin_access_key_id') }}"
-      route53_owner_secret: "{{ lookup('community.general.onepassword', onepassword_admin_vault_name, field='aws_admin_secret_access_key') }}"
-      route53_hostedzone_id: "{{ lookup('community.general.onepassword', onepassword_vault_name, field='milabs_route53_hostedzone_id') }}"
-        
+  - debug: 
+      msg: 
+      - "route53_owner_access_key:  {{ route53_owner_access_key }}"
+      - "route53_owner_secret:      {{ route53_owner_secret }}"
+      - "subdomain:                 {{ subdomain }}"
+      - "hostedzone:                {{ hostedzone }}"
+      - "hostedzone_id:             {{ hostedzone_id }}"
+
   - name: Cleanup Route53 subdomain user account
     ansible.builtin.include_role:
       name: route53_owner
@@ -30,7 +33,6 @@
       route53_owner_action: destroy
       route53_subdomain_name: "{{ subdomain }}"
       route53_hostedzone_name: "{{ hostedzone }}"
-      route53_credentials_write_vault: false
       route53_credentials_show: false
 
   - name: "Create Route53 subdomain user account for {{ subdomain }}.{{ hostedzone }}"
@@ -40,28 +42,30 @@
       route53_owner_action: create
       route53_subdomain_name: "{{ subdomain }}"
       route53_hostedzone_name: "{{ hostedzone }}"
-      route53_credentials_write_vault: false
-      route53_credentials_show: true
+      route53_credentials_show: "{{ not onepass_enabled }}"
 
 
   - name: Update 1Password with subdomain user secrets
-    when: vault_type == '1password'
+    when: onepass_enabled
     ansible.builtin.include_role:
       name: vault_utils_1password
       tasks_from: set_item.yml
     vars:
-      vault: MILabs.io
       category: server
-      section: "{{ subdomain }}-{{ hostedzone }}-subdomain"
-      account: "{{ vault_1password_mapping.account }}"
-      name: sno-local-vault
-      type: password
-      field: "route53_{{ subdomain }}_access_key_id"
-      value: "{{ item.value }}"
+      section: "subdomain-{{ cluster.subdomain | replace('.','-') }}-{{ cluster.hostedzone | replace('.','-') }}"
+      name: "{{ onepass_aws_admin_vault_item }}"
+      field: route53_subdomain_user
+      type: text
+      value: "{{ route53_subdomain_user }}"
     with_items:
-      - name: "{{ vault_1password_mapping.route53_user_access_key_id.name  }}"
-        field: "{{ vault_1password_mapping.route53_user_access_key_id.field }}"
+      - field: route53_subdomain_user_access_key
+        type: text
         value: "{{ route53_subdomain_user_access_key }}"
-      - name: "{{ vault_1password_mapping.route53_user_secret_access_key.name  }}"
-        field: "{{ vault_1password_mapping.route53_user_secret_access_key.field }}"
+      - field: route53_subdomain_user_secret
+        type: password
         value: "{{ route53_subdomain_user_secret }}"
+      - field: route53_subdomain_user_arn
+        type: text
+        value: "{{ route53_subdomain_user_arn }}"
+
+

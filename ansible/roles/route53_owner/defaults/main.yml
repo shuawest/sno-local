@@ -10,12 +10,7 @@
 route53_owner_access_key: put-in-isolated-secret-vault
 route53_owner_secret: put-in-isolated-secret-vault
 
-route53_subdomain_vault_pass: changeme
-secrets_dir: ~/.ansible/secrets
-route53_subdomain_vault_pass_path: "{{ secrets_dir }}/ansible-vault-pass"
-route53_subdomain_vault_name: "{{ route53_subdomain_name }}-subdomain-vault"
-
-route53_credentials_write_vault: true
+# Show the AWS credentials in the console so you can store in a vault manually
 route53_credentials_show: false
 
 # AWS Route53 domain vars

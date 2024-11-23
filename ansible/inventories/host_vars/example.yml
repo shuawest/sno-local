@@ -1,0 +1,47 @@
+---
+
+# SNO on Macbook Pro with M3 Pro, 12 cores, 360GB RAM, 1TB SSD 
+instance:
+  cluster_name: example
+  vm_name: "example 4.17.4"  
+  type: openshift         
+  version: 4.17.4
+  imageset: openshift-4.17 
+  arch: aarch64                      
+  hypervisor: qemu                  
+  cores: 10
+  memory_gb: 18
+  root_disk_gb: 200
+  pvc_disk_gb: 200   
+  subdomain: test       
+  hostedzone: milabs.io
+  hostedzone_id: Z04977272FB9P68H6O0NN 
+  cidr_length: 24             
+  icon: icon-rhlayers.ico   
+  clean_image: true
+  ssh_public_key_path: ~/.ssh/id_rsa.pub
+  # pull_secret: "{{ vault.openshift_pull_secret }}"
+
+ssh_public_key: "{{lookup('file', instance.ssh_public_key_path) }}"
+
+vault_1password:
+  item_name: test-secrets
+  mapping:
+    route53_user_access_key:
+      name: my-lab-secrets
+      field: "{{ instance.subdomain }}_route53_access_key"
+    route53_user_secret_key: 
+      name: my-lab-secrets
+      field: "{{ instance.subdomain }}_route53_secret_key"
+    openshift_pull_secret: 
+      name: my-lab-secrets
+      field: openshift_pull_secret_base64
+    github_pat: 
+      name: my-lab-secrets
+      field: github_pat
+    kubeadmin_password:
+      name: SNOLocal 
+      field: password
+
+ansible_user: core
+# inventory_hostname: "node.{{ instance.cluster_name }}.{{ instance.subdomain }}.{{ instance.hostedzone }}"

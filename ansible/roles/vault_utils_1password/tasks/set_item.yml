@@ -6,14 +6,14 @@
     tasks_from: vault_status.yml
   
 - name: Form account CLI arg
-  when: account is defined and account != ""
+  when: onepass_account is defined and onepass_account != ""
   ansible.builtin.set_fact:
-    account_arg: "--account='{{ account }}'"
+    account_arg: "--account='{{ onepass_account }}'"
 
 - name: Form vault CLI arg
-  when: vault is defined and vault != ''
+  when: onepass_vault is defined and onepass_vault != ''
   ansible.builtin.set_fact:
-    vault_arg: "--vault='{{ vault }}'"
+    vault_arg: "--vault='{{ onepass_vault }}'"
 
 - name: Form section CLI arg
   when: section is defined and section != ""
@@ -25,11 +25,9 @@
   ansible.builtin.shell: |
       op item create {{ account_arg | default('') }} {{ vault_arg | default('') }} \
         --title='{{ name }}' --category='{{ category | default('server') }}' \
-        {{ section_prefix | default('') }}{{ field }}[{{ type | default('password') }}]='{{ value }}' \
         < /dev/null
 
-- name: Set field if 1Password item does exist
-  # when: vault_item_exists
+- name: Set field if 1Password item
   ansible.builtin.shell: |
     op item edit '{{ name }}' \
     {{ section_prefix | default('') }}{{ field }}[{{ type | default('password') }}]='{{ value }}' \

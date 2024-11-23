@@ -1,4 +1,4 @@
 
 # Prevent git from committing local cluster configurations
-node.*.yml
-
+snompro.yml
+snomair.yml

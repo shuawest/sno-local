@@ -14,18 +14,16 @@ cluster_name: snolocal
 # - see CONTRIBUTING.md if you want to send PRs for others
 vault_type: 1password  
 
-# If using 1Password and using aws_prep.yml to create a least privilege AWS Route53 user for your subdomain, then define: 
-# - account                     Set to the 1password account if you use multiple, leave blank otherwise
-# - route53_owner_access_key    Set to the item name and field with the ACCESS KEY with permission to create an AWS IAM user for subdomain updates
-# - route53_owner_secret        Set to the item name and field with the SECRET KEY with permission to create an AWS IAM user for subdomain updates
-admin_vault_1password_mapping:
-  account: 
-  route53_owner_access_key:
-    name: milabs-admin
-    field: aws_admin_access_key_id
-  route53_owner_secret:
-    name: milabs-admin
-    field: aws_admin_secret_access_key
+# Configure the 1Password account and vault name to use for writing secrets
+# - it is recommended ot use a separate account for automation so that automation can't get to your other secrets
+# - the vault is the group within 1Password where items are created and fetched
+onepass_enabled: "{{ vault_type == '1password' }}"
+onepass_account: my.1password.com
+onepass_vault: MILabs.io
+onepass_aws_admin_vault_item: aws-route53-admin
+onepass_aws_admin_access_key_field: route53_owner_access_key
+onepass_aws_admin_secret_field: route53_owner_secret
+
 
 # Git service
 # - currently only github is automated so far
@@ -42,7 +40,7 @@ git_service: github
 definition_name: instance
 
 # Get the cluster definition object from the host_vars file based on the cluster_name
-cluster: "{{ hostvars[ 'node.' + cluster_name + '.' + instance.base_domain ][ definition_name ] }}"
+cluster: "{{ hostvars[ cluster_name ][ definition_name ] }}"
 
 
 
