@@ -99,26 +99,29 @@ instance:
 # - requires 1Password CLI installed and configured to use 1Password CLI 
 # - running ansible will use your biometric authentication on macbook
 # - secrets will be populated in the vault hierachy automatically
-vault_1password_mapping:
+vault_1password:
   account: 
-  route53_user_access_key_id:
-    name: my-lab-secrets
-    field: route53_jowest_access_key_id
-    update: true
-  route53_user_secret_access_key: 
-    name: my-lab-secrets
-    field: route53_jowest_secret_access_key
-    update: true
-  openshift_pull_secret: 
-    name: my-lab-secrets
-    field: openshift_pull_secret_base64
-  github_pat: 
-    name: my-lab-secrets
-    field: github_pat
-  kubeadmin_password:
-    name: SNOLocal 
-    field: password
-    update: true
+  vault_name: SNO-Local
+  item_name: sno-local-secrets
+  mapping:
+    route53_user_access_key_id:
+      name: my-lab-secrets
+      field: "route53_{{ instance.subdomain }}_access_key_id"
+      update: true
+    route53_user_secret_access_key: 
+      name: my-lab-secrets
+      field: "route53_{{ instance.subdomain }}_secret_access_key"
+      update: true
+    openshift_pull_secret: 
+      name: my-lab-secrets
+      field: openshift_pull_secret_base64
+    github_pat: 
+      name: my-lab-secrets
+      field: github_pat
+    kubeadmin_password:
+      name: SNOLocal 
+      field: password
+      update: true
 
 
 ##

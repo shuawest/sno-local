@@ -50,9 +50,13 @@
       name: vault_utils_1password
       tasks_from: set_item.yml
     vars:
+      vault: MILabs.io
+      category: server
+      section: "{{ subdomain }}-{{ hostedzone }}-subdomain"
       account: "{{ vault_1password_mapping.account }}"
-      name: "{{ item.name }}"
-      field: "{{ item.field }}"
+      name: sno-local-vault
+      type: password
+      field: "route53_{{ subdomain }}_access_key_id"
       value: "{{ item.value }}"
     with_items:
       - name: "{{ vault_1password_mapping.route53_user_access_key_id.name  }}"
