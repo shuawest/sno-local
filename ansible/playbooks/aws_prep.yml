@@ -5,11 +5,17 @@
   gather_facts: no
   tasks:
 
-  - set_fact:
-      onepassword_admin_vault_name: "milabs-admin"
-      onepassword_vault_name: "milabs-secrets"
-      subdomain: jowest
-      hostedzone: milabs.io
+  - name: Fetch AWS admin credentials
+    when: vault_type == '1password'
+    ansible.builtin.import_playbook: admin-vault-1password.yml
+
+  - name: Gather facts for AWS subdomain
+    ansible.builtin.set_fact:
+      route53_owner_access_key: "{{ admin_vault.route53_owner_access_key }}"
+      route53_owner_secret: "{{ admin_vault.route53_owner_secret }}"
+      subdomain: "{{ cluster.subdomain }}"
+      hostedzone: "{{ cluster.hostedzone }}"
+      hostedzone_id: "{{ cluster.hostedzone_id }}"
 
   - name: Fetch secrets
     ansible.builtin.set_fact:
@@ -36,3 +42,22 @@
       route53_hostedzone_name: "{{ hostedzone }}"
       route53_credentials_write_vault: false
       route53_credentials_show: true
+
+
+  - name: Update 1Password with subdomain user secrets
+    when: vault_type == '1password'
+    ansible.builtin.include_role:
+      name: vault_utils_1password
+      tasks_from: set_item.yml
+    vars:
+      account: "{{ vault_1password_mapping.account }}"
+      name: "{{ item.name }}"
+      field: "{{ item.field }}"
+      value: "{{ item.value }}"
+    with_items:
+      - name: "{{ vault_1password_mapping.route53_user_access_key_id.name  }}"
+        field: "{{ vault_1password_mapping.route53_user_access_key_id.field }}"
+        value: "{{ route53_subdomain_user_access_key }}"
+      - name: "{{ vault_1password_mapping.route53_user_secret_access_key.name  }}"
+        field: "{{ vault_1password_mapping.route53_user_secret_access_key.field }}"
+        value: "{{ route53_subdomain_user_secret }}"

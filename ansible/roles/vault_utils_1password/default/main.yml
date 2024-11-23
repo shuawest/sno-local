@@ -1,0 +1,20 @@
+--- 
+
+# required for fetching a secret
+name:             # Vault item name
+field:            # Field within the vault to update
+
+# Required for setting a secret, including the above
+vault:            # Vault name (group of secrets within 1password)
+value:            # Value to set in the field
+
+# Optional for setting a secret
+account:          # Leave blank for default or single account, if you have multiple specify the name
+section:          # Section of the item for the field
+category: login   # Category of secret - login | server  
+type: password    # password | txt
+
+additonal_fields:           # Add additional fields to the secret, such as the website
+# - field: website
+#   value: https://console-openshift-console.apps.csb.jowest.milabs.io/
+

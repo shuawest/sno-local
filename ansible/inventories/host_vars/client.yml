@@ -1,0 +1,54 @@
+---
+# Client host / hypervisor for Single-Node OpenShift 
+
+# Name of the target cluster ansible hostname 
+# - each has host_vars definition
+# - when working with multiple clusters, you can switch when calling playbooks using:
+#     ./ap.sh playbook/provision.yml --extra-vars "target_cluster=othercluster"
+cluster_name: snolocal
+
+# Choose your vault type
+# - 1password   - pull secrets from 1Password
+# - ansible     - pull secrets from ansible vault
+# - insecure    - pull secrets from variables in your inventory 
+# - see CONTRIBUTING.md if you want to send PRs for others
+vault_type: 1password  
+
+# If using 1Password and using aws_prep.yml to create a least privilege AWS Route53 user for your subdomain, then define: 
+# - account                     Set to the 1password account if you use multiple, leave blank otherwise
+# - route53_owner_access_key    Set to the item name and field with the ACCESS KEY with permission to create an AWS IAM user for subdomain updates
+# - route53_owner_secret        Set to the item name and field with the SECRET KEY with permission to create an AWS IAM user for subdomain updates
+admin_vault_1password_mapping:
+  account: 
+  route53_owner_access_key:
+    name: milabs-admin
+    field: aws_admin_access_key_id
+  route53_owner_secret:
+    name: milabs-admin
+    field: aws_admin_secret_access_key
+
+# Git service
+# - currently only github is automated so far
+# - see CONTRIBUTING.md if you want to send PRs for others
+git_service: github
+
+
+
+##
+# Inferred and default configuration 
+# - you should not need to modify the below variables
+
+# Top level cluster definition object name
+definition_name: instance
+
+# Get the cluster definition object from the host_vars file based on the cluster_name
+cluster: "{{ hostvars[ 'node.' + cluster_name + '.' + instance.base_domain ][ definition_name ] }}"
+
+
+
+# TODO: resolve this using ansible instead
+# Define the type of host you are running SNO Local on
+# - apple_silicon   - MacBook Pro or Air with M series apple silicon chips
+# - apple_intel     - MacBook Pro or Air with intel x86_64 chips
+# - linux_x86_64    - Fedora or RHEL with x86_64 chip
+#client_type: apple_silicon  

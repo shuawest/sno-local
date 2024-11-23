@@ -1,0 +1,52 @@
+---
+
+- name: Create Single-Node OpenShift UTM VM on CSB macbook
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+  - set_fact:
+      onepassword_vault_name: "milabs-secrets"
+
+  - name: Fetch secrets
+    ansible.builtin.set_fact:
+      vault:
+        route53_user_access_key_id: "{{ lookup('community.general.onepassword', onepassword_vault_name, field='route53_jowest_access_key_id') }}"
+        route53_user_secret_access_key: "{{ lookup('community.general.onepassword', onepassword_vault_name, field='route53_jowest_secret_access_key') }}"
+        milabs_route53_hostedzone_id: "{{ lookup('community.general.onepassword', onepassword_vault_name, field='milabs_route53_hostedzone_id') }}"
+        github_pat: "{{ lookup('community.general.onepassword', onepassword_vault_name, field='github_pat') }}"
+        csb_ssh_public_key: "{{ lookup('community.general.onepassword', onepassword_vault_name, field='csb_ssh_public_key') | trim }}"
+        openshift_pull_secret: "{{ lookup('community.general.onepassword', onepassword_vault_name, field='openshift_pull_secret_base64') | b64decode | trim }}"
+
+  - name: Set SNO settings
+    ansible.builtin.set_fact:
+      csb:
+        cluster_name: snompro
+        vm_name: snompro1
+        type: openshift                  
+        hostedzone: milabs.io
+        base_domain: jowest.milabs.io
+        version: 4.17.4
+        imageset: openshift-4.17
+        cidr_length: 24      
+        arch: aarch64                     
+        icon: icon-rhlayers.ico           
+        cores: 10
+        memory_gb: 18
+        root_disk_gb: 200
+        pvc_disk_gb: 200 
+        clean_image: true
+        ssh_public_key: "{{ vault.csb_ssh_public_key }}"
+        pull_secret: "{{ vault.openshift_pull_secret }}"
+
+  - name: Build the cluster
+    ansible.builtin.include_role:
+      name: sno_utm_route53
+    vars:
+      sno: "{{ csb }}"
+      route53_user_access_key_id: "{{ vault.route53_user_access_key_id }}"
+      route53_user_secret_access_key: "{{ vault.route53_user_secret_access_key }}"
+
+
+
+

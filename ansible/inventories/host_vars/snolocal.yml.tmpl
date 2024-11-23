@@ -1,0 +1,132 @@
+---
+
+# How to use this template:
+#
+# 1. Copy and rename this file to your local target cluster's fully qualified node name
+#      cp ansible/inventories/snolocal.yml.tmpl ansible/inventories/node.<cluster_name>.<subdomain>.yml
+# 
+#  2. Adjust the settings for your environment
+#     - use a unique cluster and vm name per instance across all your installs sharing the same DNS subdomain
+#     - ensure the cluster sizing fits in your machine, while meeting minimum core/memory/disk requirements
+#
+#  3. Try different configurations - experiment, have fun, contribute back. 
+
+
+# Define the configuration of your SNO cluster
+instance:
+
+  # Name of cluster and virtual machine
+  # - 'cluster_name' this name needs to be globally unique across all clusters in your AWS subdomain.
+  # - 'cluster_name' will beused in cluster URL, ensure you use alpha-numeric and DNS compatible characters.
+  # - 'vm_name' allows you to put a more friendly name, but since a VM instance it tied to an IP make it 
+  #   closely align with your cluster name.
+  cluster_name: snolocal    
+  vm_name: snolocal 4.17.4                 
+
+  # Type of cluster to create: 
+  # openshift | microshift
+  # - if using microshift use the other host template in ansible/inventories/host_vars/mshift.yml
+  type: openshift                       
+
+  # Target OpenShift version and image stream
+  version: 4.17.4                       
+  imageset: openshift-4.17                          
+  
+  # VM arch to use: aarch64 | x86_64. 
+  # - If on an M series / Apple Siliecon chip then aarch64 is more stable, 
+  #   however not all capabilities support arm architeture yet.
+  arch: aarch64                         
+  
+  # Hypervisor to use: qemu | applehv
+  # - ONLY applicable to MacOS
+  hypervisor: qemu
+
+  # Size of the VM to create
+  # - It is possible to overcommit cores and memory, but it may not be stable if you do.  
+  # - On a smaller machine you may overcommit to install for the minimum resources required
+  #   and then resize the VM in UTM / QEMU to a more resaonable size.
+  # - Minimum SNO requirements
+  #   - vCPUs:     8 to 10
+  #   - memory:    16 GB
+  #   - root disk: 120 GB
+  cores: 10
+  memory_gb: 18
+  root_disk_gb: 200
+  pvc_disk_gb: 200 
+
+  # AWS Route53 hosted zone 
+  #  To limit access to your AWS account you can create a subdomain with a user and access credientials
+  #  that have limited to manage DNS records in that subdomain for name resolution and certificate challenges
+  #  You can use playbooks/aws_prep.yml to create the user and policies, and obtain the credentials to put in your vault
+  base_domain: homelab.mydomain.io     
+  hostedzone: mydomain.io              
+  hostedzone_id: G15488382FB9P68E6O0MN  
+  
+  # VM host IP subnet CIDR length
+  cidr_length: 24 
+
+  # Icon to use for the UTM VM instance
+  #   Icons are stored in the roles/utm/files/ directory:
+  #   icon-k8s.ico | icon-microservice.ico | icon-microshift.ico | icon-ocp.ico | icon-redhat.ico | icon-rhlayers.ico
+  icon: icon-rhlayers.ico               
+  
+  # Clean the target files cached from last install
+  # - enable if you want to start from scratch, or change the target version 
+  # - disable if you want reuse the files from last install
+  clean_image: true
+  
+  # SSH public key to use to create the VM
+  # - For basic usage you will use the same key for all on your local machine
+  #   ~/.ssh/id_rsa.pub
+  #   ~/.ssh/id_ed25519.pub
+  # - If you use many keys generate a unique SSH key to connect to the guest clusters
+  #   ssh-keygen -t ed25519 -f ~/.ssh/id_snolocal.pub
+  ssh_public_key_path: ~/.ssh/id_ed25519.pub
+  ssh_public_key: "{{ lookup('file', instance.ssh_public_key) }}"
+
+  # OpenShift pull secret
+  # - For multiple clusters and hosts it is convenient to keep your pull secret in a vault like 1Password
+  # - Pull secrets expire periodically, keep it updated from the bottom of https://console.redhat.com/openshift/downloads
+  # - If you don't yet have a Red Hat Developer account with free access, sign up at: https://sso.redhat.com/auth/realms/redhat-external/account 
+  # - Example 
+  #      pull_secret: '{"auths": {"cloud.openshift.com": {"auth": "b3B ....... "email": "<my-redhat-dev-account>@gmail.com"}}}'
+  pull_secret: "{{ vault.openshift_pull_secret }}"
+
+
+
+# Lookup and update secrets from 1Password 
+# - create the following keys in a 1Password vault as fields, naming fields to your preference
+# - requires 1Password CLI installed and configured to use 1Password CLI 
+# - running ansible will use your biometric authentication on macbook
+# - secrets will be populated in the vault hierachy automatically
+vault_1password_mapping:
+  account: 
+  route53_user_access_key_id:
+    name: my-lab-secrets
+    field: route53_jowest_access_key_id
+    update: true
+  route53_user_secret_access_key: 
+    name: my-lab-secrets
+    field: route53_jowest_secret_access_key
+    update: true
+  openshift_pull_secret: 
+    name: my-lab-secrets
+    field: openshift_pull_secret_base64
+  github_pat: 
+    name: my-lab-secrets
+    field: github_pat
+  kubeadmin_password:
+    name: SNOLocal 
+    field: password
+    update: true
+
+
+##
+## VM guest connection configuration
+
+# SSH user to access the VM guest
+ansible_user: core
+
+# Hostname to use for the VM guest
+inventory_hostname: "node.{{ instance.cluster_name }}.{{ instance.subdomain }}"
+

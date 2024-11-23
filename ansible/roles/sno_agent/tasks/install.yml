@@ -3,8 +3,7 @@
 - name: "Wait for bootstrap complete"
   ansible.builtin.shell: |
     export KUBECONFIG={{ sno_agent_dir }}/auth/kubeconfig
-    openshift-install --dir={{ sno_agent_dir }} agent wait-for bootstrap-complete > {{ sno_agent_dir }}/wait-bootstrap.log
-    cat {{ sno_agent_dir }}/wait-bootstrap.log
+    openshift-install --dir={{ sno_agent_dir }} agent wait-for bootstrap-complete 
   register: bootstrap_complete_output
 
 - name: "Show wait-bootstrap.log"
@@ -18,8 +17,7 @@
 - name: "Wait for install complete"
   ansible.builtin.shell: |
     export KUBECONFIG={{ sno_agent_dir }}/auth/kubeconfig
-    openshift-install --dir={{ sno_agent_dir }} wait-for install-complete > {{ sno_agent_dir }}/install-complete.log
-    cat {{ sno_agent_dir }}/install-complete.log
+    openshift-install --dir={{ sno_agent_dir }} wait-for install-complete
   register: install_complete_output
 
 - name: "Show install-complete.log"

@@ -2,4 +2,11 @@
 [all]
 client   ansible_connection=local
 
+[admin_vault]
+client
+
+[vault]
+client
+
+
 

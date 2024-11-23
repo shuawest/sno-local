@@ -1,0 +1,18 @@
+---
+
+# Define your secrets and secure using an ansible vault in ~/.ansible/secrets/sno-local-vault
+# > mkdir -p ~/.ansible/secrets
+# > ansible-vault create ~/.ansible/secrets/sno-local-vault
+# > 
+vault:
+  route53_user_access_key_id:
+  route53_user_secret_access_key: 
+  route53_hostedzone_id: 
+  github_pat: 
+  openshift_pull_secret: 
+  kubeadmin_password:
+
+
+
+
+  

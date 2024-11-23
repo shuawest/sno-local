@@ -26,6 +26,7 @@
 
 - name: Gather generated user access keys
   set_fact:
+    cacheable: true
     route53_subdomain_user_access_key: "{{ access_key_res.access_key_id | default('error') }}"  
     route53_subdomain_user_secret: "{{ access_key_res.secret_access_key | default('error') }}" 
 

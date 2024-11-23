@@ -1,0 +1,54 @@
+---
+
+- name: Test writing to vault
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+  - name: Create Login vault item
+    ansible.builtin.include_role:
+      name: vault_utils_1password
+      tasks_from: set_item.yml
+    vars:
+      vault: MILabs.io
+      name: example1
+      category: login
+      field: password
+      value: my-kube-admin-pass
+      additonal_fields:
+        - field: username
+          value: kubeadmin
+          type: text
+        - field: website
+          value: https://oauth-openshift.apps.csb.jowest.milabs.io/login
+          type: url
+        - field: console
+          value: https://console-openshift-console.apps.csb.jowest.milabs.io/
+          type: url
+        
+  - name: Create Service vault item
+    ansible.builtin.include_role:
+      name: vault_utils_1password
+      tasks_from: set_item.yml
+    vars:
+      vault: MILabs.io
+      name: lab-credentials
+      category: server
+      field: aws_admin_access_key_id
+      value: sampleaccesskey
+      type: text
+      section: jowest-subdomain
+      additonal_fields:
+        - field: aws_admin_secret_access_key
+          value: "my example secret key"
+          type: password
+          section: jowest-subdomain
+        - field: route53_jowest_subdomain_user
+          value: jowest-subdomain-user
+          type: text
+          section: jowest-subdomain
+        - field: route53_jowest_subdomain_user_arn
+          value: example-arn
+          type: text
+          section: jowest-subdomain
+        
