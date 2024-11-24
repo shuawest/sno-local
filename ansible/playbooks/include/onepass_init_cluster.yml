@@ -21,10 +21,10 @@
         value: "<not populated yet>"
         type: password
         prevent_overwrite: true
-      - field: "console"
+      - field: "website"
         value: "https://console-openshift-console.apps.{{ cluster_full_name }}/"
         type: text
-      - field: "website"
+      - field: "auth"
         value: "https://oauth-openshift.apps.{{ cluster_full_name }}/login"
         type: text
       - field: "API"

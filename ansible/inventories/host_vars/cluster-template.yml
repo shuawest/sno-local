@@ -37,9 +37,11 @@ instance:
   #   however not all capabilities support arm architeture yet.
   arch: aarch64                         
   
-  # Hypervisor to use: qemu | applehv
-  # - ONLY applicable to MacOS
-  hypervisor: qemu
+  # Hypervisor to use: 
+  # - virtualization:    UTM | qemu
+  # - apple_hypervisor:  qemu | applehv (applehv is applicable to MacOS)
+  virtualization: UTM 
+  apple_hypervisor: qemu
 
   # Size of the VM to create
   # - It is possible to overcommit cores and memory, but it may not be stable if you do.  
@@ -81,47 +83,12 @@ instance:
   #   ~/.ssh/id_ed25519.pub
   # - If you use many keys generate a unique SSH key to connect to the guest clusters
   #   ssh-keygen -t ed25519 -f ~/.ssh/id_snolocal.pub
-  ssh_public_key_path: ~/.ssh/id_ed25519.pub
-  ssh_public_key: "{{ lookup('file', instance.ssh_public_key) }}"
-
-  # OpenShift pull secret
-  # - For multiple clusters and hosts it is convenient to keep your pull secret in a vault like 1Password
-  # - Pull secrets expire periodically, keep it updated from the bottom of https://console.redhat.com/openshift/downloads
-  # - If you don't yet have a Red Hat Developer account with free access, sign up at: https://sso.redhat.com/auth/realms/redhat-external/account 
-  # - Example 
-  #      pull_secret: '{"auths": {"cloud.openshift.com": {"auth": "b3B ....... "email": "<my-redhat-dev-account>@gmail.com"}}}'
-  pull_secret: "{{ vault.openshift_pull_secret }}"
+  ssh_key_public_path: ~/.ssh/id_ed25519.pub
+  ssh_key_private_path: ~/.ssh/id_ed25519
 
 
-
-# Lookup and update secrets from 1Password 
-# - create the following keys in a 1Password vault as fields, naming fields to your preference
-# - requires 1Password CLI installed and configured to use 1Password CLI 
-# - running ansible will use your biometric authentication on macbook
-# - secrets will be populated in the vault hierachy automatically
-vault_1password:
-  account: 
-  vault_name: SNO-Local
-  item_name: sno-local-secrets
-  mapping:
-    route53_user_access_key_id:
-      name: my-lab-secrets
-      field: "route53_{{ instance.subdomain }}_access_key_id"
-      update: true
-    route53_user_secret_access_key: 
-      name: my-lab-secrets
-      field: "route53_{{ instance.subdomain }}_secret_access_key"
-      update: true
-    openshift_pull_secret: 
-      name: my-lab-secrets
-      field: openshift_pull_secret_base64
-    github_pat: 
-      name: my-lab-secrets
-      field: github_pat
-    kubeadmin_password:
-      name: SNOLocal 
-      field: password
-      update: true
+# Name of the vault item in 1Password to get and write to
+onepass_vault_item: sno-local-secrets
 
 
 ##
@@ -130,6 +97,6 @@ vault_1password:
 # SSH user to access the VM guest
 ansible_user: core
 
-# Hostname to use for the VM guest
-inventory_hostname: "node.{{ instance.cluster_name }}.{{ instance.subdomain }}"
+ssh_key_public: "{{lookup('file', instance.ssh_key_public_path) }}"
+ssh_key_private: "{{lookup('file', instance.ssh_key_private_path) }}"
 

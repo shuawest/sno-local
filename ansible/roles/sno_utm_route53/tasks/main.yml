@@ -84,11 +84,6 @@
         value: "{{ utm_vm_ip_addr }}"
         zone: "{{ sno.hostedzone }}"
         type: A
-      # node_reverse:
-      #   record: "{{ utm_vm_ip_addr.split('.') | reverse | join('.') }}.in-addr.arpa"
-      #   value: "node.{{ sno.cluster_name }}.{{ sno.base_domain }}."
-      #   zone: "{{ sno.hostedzone }}"
-      #   type: PTR
       api:
         record: "api.{{ sno.cluster_name }}.{{ sno.base_domain }}"
         value: "{{ utm_vm_ip_addr }}"
@@ -137,16 +132,6 @@
   vars:
     utm_vm_name: "{{ sno.vm_name }}"
     utm_boot_iso: "{{ sno_boot_iso }}"
-
-# # - name: "Configure and start dnsmasq"
-# #   ansible.builtin.include_role:
-# #     name: sno_agent
-# #     tasks_from: dnsmasq.yml
-# #   vars:
-# #     sno_base_domain: "{{ sno.base_domain }}"
-# #     sno_cluster_name: "{{ sno.cluster_name }}"
-# #     sno_ip_addr: "{{ sno.ip_addr }}"
-# #     sno_machine_cidr_length: "{{ sno.cidr_length }}"
 
 - name: "Start the UTM VM: {{ utm_vm_name }}"
   ansible.builtin.include_role:

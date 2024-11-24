@@ -1,9 +1,9 @@
 ---
 
-# SNO on Macbook Pro with M3 Pro, 12 cores, 360GB RAM, 1TB SSD 
+# SNO on Macbook Pro with M3 Pro, 12 cores, 36GB RAM, 1TB SSD 
 instance:
-  cluster_name: example
-  vm_name: "example 4.17.4"  
+  cluster_name: mbpsno
+  vm_name: "mbpsno 4.17.4"  
   type: openshift         
   version: 4.17.4
   imageset: openshift-4.17 
@@ -14,9 +14,9 @@ instance:
   memory_gb: 18
   root_disk_gb: 200
   pvc_disk_gb: 200   
-  subdomain: test       
+  subdomain: jowest       
   hostedzone: milabs.io
-  hostedzone_id: P04977273FB9G68H6O0MM 
+  hostedzone_id: Z04977272FB9P68H6O0NN 
   cidr_length: 24             
   icon: icon-rhlayers.ico   
   clean_image: true
