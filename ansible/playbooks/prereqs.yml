@@ -40,7 +40,7 @@
 
   - name: Check openshift-installer is globally available
     ansible.builtin.stat:
-      path: /usr/local/bin/openshift-installer
+      path: /usr/local/bin/openshift-install
     register: openshift_installer_stat  
 
   - ansible.builtin.assert:
@@ -48,13 +48,13 @@
       success_msg: "openshift-installer is available"
       fail_msg: "openshift-installer is not available in /usr/local/bin. Download and install for your chip architecture from https://console.redhat.com/openshift/downloads"
 
-  - name: Get the openshift-installer version information
+  - name: Get the openshift-install version information
     when: openshift_installer_stat.stat.exists
     ansible.builtin.shell: |
-      openshift-installer version
+      openshift-install version
     register: openshift_installer_version_output
       
-  - name: Show openshift-installer version information
+  - name: Show openshift-install version information
     when: openshift_installer_stat.stat.exists
     ansible.builtin.debug:
       msg: "{{ openshift_installer_version_output.stdout }}"

@@ -1,0 +1,19 @@
+---
+
+- name: Get secrets from 1Password 
+  when: onepass_enabled
+  import_playbook: ./include/vault-onepass.yml
+
+- name: Log into openshift, and set the context name
+  hosts: client
+  gather_facts: no
+  tasks:
+
+  - name: Login to the target cluster
+    ansible.builtin.shell: |
+      oc login -u kubeadmin -p "{{ vault.instance_kubeadmin }}" --server {{ vault.instance_api_url }} --insecure-skip-tls-verify
+
+  - name: Rename the kubectx to the cluster_name
+    ansible.builtin.shell: |
+      kubectx {{ cluster.cluster_name }}=$(kubectx -c)
+

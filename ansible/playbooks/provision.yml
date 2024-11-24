@@ -37,3 +37,6 @@
   when: not onepass_enabled
   import_playbook: include/instance_facts.yml
 
+- name: Log into cluster and set kubectx name
+  import_playbook: login_kubeadmin.yml
+

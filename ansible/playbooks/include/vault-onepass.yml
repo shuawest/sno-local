@@ -5,6 +5,9 @@
   gather_facts: no
   tasks:
 
+  - ansible.builtin.set_fact:
+      onepass_login_item_name: "Login {{ cluster_full_name }}"
+
   - name: Fetch secrets
     ansible.builtin.set_fact:
       cacheable: true
@@ -17,4 +20,7 @@
         openshift_pull_secret: "{{ lookup('community.general.onepassword', onepass_cluster_item, field=onepass_pull_secret_field, section='common') | b64decode | trim }}"
         # ssh_key_public: "{{ lookup('community.general.onepassword', onepass_cluster_item, field=onepass_ssh_key_public_field, section='common') | b64decode | trim }}"
         # ssh_key_private: "{{ lookup('community.general.onepassword', onepass_cluster_item, field=onepass_ssh_key_private_field, section='common') | b64decode | trim }}"
-
+        instance_kubeadmin: "{{ lookup('community.general.onepassword', onepass_login_item_name, field='password') }}"
+        instance_api_url: "{{ lookup('community.general.onepassword', onepass_login_item_name, field='API', section='automation') }}"
+        instance_kubeconfig_path: "{{ lookup('community.general.onepassword', onepass_login_item_name, field='kubeconfig_path', section='automation') }}"
+        instance_agent_dir: "{{ lookup('community.general.onepassword', onepass_login_item_name, field='agent_dir', section='automation') }}"
