@@ -12,4 +12,6 @@ collections
 # output temp files
 target
 
+# must gather
+must-gather*
 

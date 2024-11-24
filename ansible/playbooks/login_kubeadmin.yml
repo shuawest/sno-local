@@ -11,7 +11,7 @@
 
   - name: Login to the target cluster
     ansible.builtin.shell: |
-      oc login -u kubeadmin -p "{{ vault.instance_kubeadmin }}" --server {{ vault.instance_api_url }} --insecure-skip-tls-verify
+      oc login -u kubeadmin -p "{{ instance_kubeadmin }}" --server {{ instance_api_url }} --insecure-skip-tls-verify
 
   - name: Rename the kubectx to the cluster_name
     ansible.builtin.shell: |
