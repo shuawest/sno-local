@@ -6,7 +6,7 @@
   tasks:
 
   # aws admin secrets item
-  - name: Create AWS Route53 Admin vault item
+  - name: Inialize AWS Route53 Admin vault item
     when: onepass_enabled
     ansible.builtin.include_role:
       name: vault_utils_1password
@@ -34,7 +34,7 @@
       - section: "Hosting Provider"
         remove: true
 
-  - name: Update 1Password with subdomain user secrets
+  - name: Initialize 1Password with subdomain user secret
     when: onepass_enabled
     ansible.builtin.include_role:
       name: vault_utils_1password
@@ -42,7 +42,23 @@
     vars:
       category: server
       name: "{{ onepass_cluster_item }}"
-      fields: []
+      fields:  
+      - field: "{{ onepass_pull_secret_field }}"
+        section: common
+        value: "<download pull secret, and update with playbooks/update_pull_secret.yml>"
+        type: password
+        prevent_overwrite: true
+      - field: "URL"
+        remove: true
+      - field: "username"
+        remove: true
+      - field: "password"
+        remove: true
+      - section: "Admin Console"
+        remove: true
+      - section: "Hosting Provider"
+        remove: true
+
 
   # sno-local-secrets item
   # - openshift pull secret

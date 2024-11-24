@@ -22,15 +22,14 @@
   ansible.builtin.set_fact:
     field_section_prefix: ""
 
-- when: vault_utils_1password_debug
-  debug: 
-    msg: 
-    - "prevent_overwrite       {{ prevent_overwrite }}"
-    - "remove                  {{ remove }}"
-    - "section_exists          {{ section_exists }}"
-    - "field_exists            {{ field_exists }}"
-    - "section_only            {{ section_only }}"
-    - "field_section_prefix    {{ field_section_prefix }}"
+# - debug: 
+#     msg: 
+#     - "prevent_overwrite       {{ prevent_overwrite }}"
+#     - "remove                  {{ remove }}"
+#     - "section_exists          {{ section_exists }}"
+#     - "field_exists            {{ field_exists }}"
+#     - "section_only            {{ section_only }}"
+#     - "field_section_prefix    {{ field_section_prefix }}"
 
 
 - name: Check if field already exists before setting if overwrite is false
@@ -69,7 +68,7 @@
   ansible.builtin.set_fact:
     item_fields: "{{fetch_item_output_json.stdout | from_json }}"
 
-- name: "Extract field list for section {{item_field.section }}"
+- name: Extract field list for section
   when: section_only and remove 
   ansible.builtin.set_fact:
     section_fields: "{{ item_fields.fields | selectattr('section', 'defined') | list | selectattr('section.label', 'equalto', item_field.section) | list }}"

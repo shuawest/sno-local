@@ -49,6 +49,3 @@ onepass_account: my.1password.com
 # Vault group name in 1Password the account has access to
 # - the vault is the group within 1Password where items are created and fetched
 onepass_vault: MILabs.io
-
-# print key facts per field 
-vault_utils_1password_debug: false

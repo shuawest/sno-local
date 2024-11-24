@@ -25,6 +25,8 @@ onepass_aws_admin_access_key_field: route53_owner_access_key
 onepass_aws_admin_secret_field: route53_owner_secret
 onepass_route53_subdomain_access_key_field: route53_subdomain_access_key
 onepass_route53_subdomain_secret_field: route53_subdomain_secret
+
+onepass_pull_secret_item: 
 onepass_pull_secret_field: openshift_pull_secret_base64
 onepass_github_pat_field: github_pat
 
