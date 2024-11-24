@@ -1,0 +1,42 @@
+
+- name: Gather target cluster instance facts
+  hosts: client
+  gather_facts: no
+  tasks:
+
+  - name: Gather cluster variables to populate in 1Password
+    when: cluster.type == 'openshift' and cluster.virtualization == 'UTM'
+    ansible.builtin.include_role:
+      name: sno_utm_route53
+      tasks_from: facts.yml
+    vars:
+      sno: "{{ cluster }}"
+
+  # - name: Gather cluster variables to populate in 1Password
+  #   when: cluster.type == 'microshift' and cluster.virtualization == 'UTM'
+  #   ansible.builtin.include_role:
+  #     name: microshift_utm_route53
+  #     tasks_from: facts.yml
+  #   vars:
+  #     microshift: "{{ cluster }}"
+
+
+  - debug: 
+      msg:
+      - "macos_host_ip_addr:       {{ macos_host_ip_addr }}"
+      - "instance_ip_addr:         {{ instance_ip_addr }}"
+      - "instance_mac_addr:        {{ instance_mac_addr }}"
+      - "instance_started:         {{ instance_started }}"
+      - "instance_vm_exists:       {{ instance_vm_exists }}"
+      - "instance_vm_dir_exists:   {{ instance_vm_dir_exists }}"
+      - "instance_staging_dir:     {{ instance_staging_dir }}"
+      - "instance_agent_dir:       {{ instance_agent_dir }}"
+      - "instance_api_url:         {{ instance_api_url }}"
+      - "instance_console_url:     {{ instance_console_url }}"
+      - "instance_oauth_url:       {{ instance_oauth_url }}"
+      - "instance_kubeadmin_path:  {{ instance_kubeadmin_path }}"
+      - "instance_kubeconfig_path: {{ instance_kubeconfig_path }}"
+      - "instance_kubeadmin:       {{ instance_kubeadmin }}"
+      - "instance_kubeconfig:      ..."
+
+

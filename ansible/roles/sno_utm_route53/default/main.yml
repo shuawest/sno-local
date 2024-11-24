@@ -1,13 +1,5 @@
 --- 
 
-vault:
-  route53_user_access_key_id: 
-  route53_user_secret_access_key: 
-  milabs_route53_hostedzone_id: 
-  github_pat: 
-  ssh_public_key: 
-  openshift_pull_secret: 
-
 sno:
   cluster_name: sno
   vm_name: sno-arm1
@@ -23,11 +15,5 @@ sno:
   root_disk_gb: 200
   pvc_disk_gb: 200 
   clean_image: true
-  ssh_public_key: "{{ vault.ssh_public_key }}" 
-  pull_secret: "{{ vault.openshift_pull_secret }}" 
   icon: icon-rhlayers.ico           # icon-k8s.ico | icon-microservice.ico | icon-microshift.ico | icon-ocp.ico | icon-redhat.ico | icon-rhlayers.ico
   
-
-  # ip_addr: 192.168.30.40            
-  # mac_addr: '86:A8:41:CB:99:BF'
-  # mac_addr: "{{ '86:A8:41' | community.general.random_mac }}" 

@@ -1,6 +1,6 @@
 ---
 
-- name: Create 1Pasword Vault items for manual entry
+- name: Create 1Pasword Vault items 
   hosts: client
   gather_facts: no
   tasks:
@@ -32,6 +32,11 @@
         value: "https://api.{{ cluster_full_name }}:6443"
         type: text
       - field: "IP"
+        section: automation
+        value: "<not populated yet>"
+        type: text
+        prevent_overwrite: true
+      - field: "MAC"
         section: automation
         value: "<not populated yet>"
         type: text

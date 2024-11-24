@@ -1,6 +1,7 @@
 ---
 
-- when: onepass_enabled
+- name: Get secrets from 1Password 
+  when: onepass_enabled
   import_playbook: ./include/vault-onepass.yml
 
 - name: Provision target cluster 
@@ -28,19 +29,11 @@
   #     route53_user_access_key_id: "{{ vault.route53_user_access_key_id }}"
   #     route53_user_secret_access_key: "{{ vault.route53_user_secret_access_key }}"
 
+- name: Set instance secrets in 1Password
+  when: onepass_enabled
+  import_playbook: include/onepass_cluster_populate.yml
 
-  # - name: Update 1Password cluster login secret
-  #   when: onepass_enabled
-  #   ansible.builtin.include_role:
-  #     name: vault_utils_1password
-  #     tasks_from: set_item.yml
-  #   vars:
-  #     category: login
-  #     name: "Login {{ cluster_full_name }}"
-  #     fields:  
-  #     - field: "password"
-  #       value: "{{ kubeadmin_password }}"
-  #       type: password
-  #     - field: "password"
-  #       value: "{{ cluster_ip_address }}"
-  #       type: password
+- name: Show instance secrets
+  when: not onepass_enabled
+  import_playbook: include/instance_facts.yml
+

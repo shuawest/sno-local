@@ -9,7 +9,7 @@
   - name: Fetch UTM VM Info
     ansible.builtin.include_role:
       name: utm
-      tasks_from: info.yml
+      tasks_from: facts.yml
     vars:
       utm_vm_name: sno-csb-arm1
 

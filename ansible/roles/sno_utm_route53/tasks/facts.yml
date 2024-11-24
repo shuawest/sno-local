@@ -1,0 +1,44 @@
+---
+
+- name: Gather hypervisor / host facts
+  ansible.builtin.include_role:
+    name: sno_agent
+    tasks_from: hypervisor_facts.yml
+  vars: 
+    sno_machine_cidr_length: "{{ sno.cidr_length }}"
+
+- name: Gather UTM VM facts
+  ansible.builtin.include_role:
+    name: utm
+    tasks_from: facts.yml
+  vars:
+    utm_vm_name: "{{ sno.vm_name }}"
+
+- name: Gather SNO Agent instance facts
+  ansible.builtin.include_role:
+    name: sno_agent
+    tasks_from: facts.yml
+  vars: 
+    sno_cluster_name: "{{ sno.cluster_name }}"
+    sno_base_domain: "{{ sno.subdomain }}.{{ sno.hostedzone }}"
+
+- name: Set facts for the record at playbook level
+  ansible.builtin.set_fact:
+    cacheable: true
+    macos_host_ip_addr: "{{ macos_host_ip_addr }}"
+    instance_ip_addr: "{{ utm_vm_ip_addr }}"
+    instance_mac_addr: "{{ utm_vm_mac_addr }}"
+    instance_started: "{{ utm_vm_started }}"
+    instance_vm_exists: "{{ utm_vm_exists }}"
+    instance_vm_dir_exists: "{{ utm_vm_dir_exists }}"
+    instance_staging_dir: "{{ sno_staging_dir }}"
+    instance_agent_dir: "{{ sno_agent_dir }}"
+    instance_api_url: "{{ sno_api_url }}"
+    instance_console_url: "{{ sno_console_url }}"
+    instance_oauth_url: "{{ sno_oauth_url }}"
+    instance_kubeadmin_path: "{{ sno_kubeadmin_pass_path }}"
+    instance_kubeconfig_path: "{{ sno_kubeconfig_path }}"
+    instance_kubeadmin: "{{ sno_kubeadmin_pass }}"
+    instance_kubeconfig: "{{ sno_kubeconfig }}"
+
+

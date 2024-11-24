@@ -3,7 +3,7 @@
 - name: Get VM status
   ansible.builtin.include_role:
     name: utm
-    tasks_from: info.yml
+    tasks_from: facts.yml
 
 - name: Delete the VM
   when: utm_vm_exists and utm_vm_started

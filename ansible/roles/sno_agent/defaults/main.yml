@@ -23,6 +23,8 @@ sno_api_url: "https://{{ sno_api_dns }}:6443"
 sno_apps_dns: "apps.{{ sno_cluster_name }}.{{ sno_base_domain }}"
 sno_console_dns: "console-openshift-console.{{ sno_apps_dns }}"
 sno_console_url: "https://{{ sno_console_dns }}"
+sno_oauth_url: "https://oauth-openshift.apps.{{ sno_cluster_name }}.{{ sno_base_domain }}/login"
+
 
 # defaults
 sno_version: 4.17.3
@@ -43,5 +45,4 @@ sno_machine_cidr_length: 24
 sno_machine_prefix: "{{ sno_ip_addr | ansible.utils.ipsubnet( sno_machine_cidr_length ) | split('/') | first }}"
 sno_ip_addr_reverse: "{{ sno_ip_addr.split('.') | reverse | join('.') }}"
 
-macos_bonjour_service_enabled: false
-macos_dnsmasq_enabled: true
+

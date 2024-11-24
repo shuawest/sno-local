@@ -1,51 +1,99 @@
 ---
 
-- name: Check prerequisites. Install automatable. Instruct manual how tos.
+# https://docs.ansible.com/ansible/latest/collections/community/general/homebrew_module.html
+
+- name: Check prerequisites. Install automatable. Instruct on manual steps.
   hosts: client
   gather_facts: no
   tasks:
 
-  # one password cli
-
-  # required values in 1Password 
-  # - openshift_pull_secret
-
-  # On MacOS
-  # - UTM 
-  # - podman
-  # - openshift-installer in /usr/local/bin
-  # - oc client
-  # - op 1Password client
-  # optional:
-  # - tekton
-  # - odo
-  # - helm
-  # - argocd
+  ###
+  # homebrew
+  # - check that homebrew is installed if on MacOS
 
 
-# 1. Install UTM on MacOS
-#    https://mac.getutm.app/ 
+  ###
+  # MacOS CLI commands
+
+  - name: Install MacOS brew managed packages
+    community.general.homebrew:
+      update_homebrew: true
+      upgrade_all: true
+      name: "{{ brew_package_name }}"
+      state: present
+    loop_control:
+      loop_var: brew_package_name
+    with_items:  
+    - 1password-cli
+    - openshift-cli
+    - kubectl
+    - kubectx
+    - argocd
+    - tektoncd-cli
+    - helm
+    - odo
+    
+  ###
+  # openshift-installer 
+  #   - OpenShift for arm insaller - MacOS / arm64
+  #     https://mirror.openshift.com/pub/openshift-v4/aarch64/clients/ocp/stable/openshift-install-mac-arm64.tar.gz
+
+  - name: Check openshift-installer is globally available
+    ansible.builtin.stat:
+      path: /usr/local/bin/openshift-installer
+    register: openshift_installer_stat  
+
+  - ansible.builtin.assert:
+      that: openshift_installer_stat.stat.exists
+      success_msg: "openshift-installer is available"
+      fail_msg: "openshift-installer is not available in /usr/local/bin. Download and install for your chip architecture from https://console.redhat.com/openshift/downloads"
+
+  - name: Get the openshift-installer version information
+    when: openshift_installer_stat.stat.exists
+    ansible.builtin.shell: |
+      openshift-installer version
+    register: openshift_installer_version_output
+      
+  - name: Show openshift-installer version information
+    when: openshift_installer_stat.stat.exists
+    ansible.builtin.debug:
+      msg: "{{ openshift_installer_version_output.stdout }}"
+
+
+  ###
+  # openshift-installer 
   
-# 2. Install Podman / Podman Desktop for MacOS
+  - name: Check UTM is installed
+    ansible.builtin.stat:
+      path: "{{ lookup('env', 'HOME') }}/Library/Containers/com.utmapp.UTM/Data/Documents"
+    register: utm_docs_stat  
 
-# 3. Download command line tools and install to /usr/local/bin from https://console.redhat.com/openshift/downloads
+  - name: Assert UTM is installed
+    ansible.builtin.assert:
+      that: utm_docs_stat.stat.exists
+      success_msg: "UTM is installed"
+      fail_msg: "UTM is not installed. Install from https://getutm.app/"
 
-#   - Ansible
-#     `brew install ansible`
-#   - OpenShift for arm insaller - MacOS / arm64
-#     https://mirror.openshift.com/pub/openshift-v4/aarch64/clients/ocp/stable/openshift-install-mac-arm64.tar.gz
-#   - OpenShift client
-#     https://mirror.openshift.com/pub/openshift-v4/aarch64/clients/ocp/stable/openshift-client-mac-arm64.tar.gz
-#     or `brew install openshift-cli`
-#   - Helm 3 CLI
-#     https://mirror.openshift.com/pub/openshift-v4/clients/helm/latest/helm-darwin-arm64.tar.gz
-#     or `brew install helm`
-#   - ODO Developer CLI for OpenShift
-#     https://developers.redhat.com/content-gateway/rest/mirror/pub/openshift-v4/clients/odo/latest/odo-darwin-arm64.tar.gz
-#     or `brew install odo`
-#   - ArgoCD GitOps CLI
-#     https://developers.redhat.com/content-gateway/rest/browse/pub/openshift-v4/clients/openshift-gitops/latest/argocd-macos-arm64.tar.gz
-#     or `brew install argocd`
-#   - Tekton CLI
-#     https://mirror.openshift.com/pub/openshift-v4/clients/pipeline/latest/tkn-macos-arm64.tar.gz
-#     or `brew install tektoncd-cli`
+
+  ###
+  # 1Password CLI 
+  # - only when onepass_enabled
+  # - op command can connect and get to vault
+  # - openshift_pull_secret required value in 1Password 
+
+
+  ###
+  # Podman
+  # - check podman is installed
+  # - check podman is running
+
+
+  ###
+  # Ansible
+  # - ansible is already installed if running prereqs 
+  #   - add install directions in README.md
+  # - check collections are initialized
+  # - check python requirements are installed
+  # - show python version - and describe how to configure
+
+
