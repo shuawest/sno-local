@@ -6,7 +6,7 @@ instance:
   vm_name: "example 4.17.4"  
   type: openshift         
   version: 4.17.4
-  imageset: openshift-4.17 
+  imageset: openshift-4.17       # For OCP openshift-4.x, for OKE use stable-4.x
   arch: aarch64   
   virtualization: UTM 
   apple_hypervisor: qemu                 

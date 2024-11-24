@@ -1,0 +1,32 @@
+---
+
+# OKE on Macbook Air with M3, 8 cores, 24GB RAM, 2TB SSD 
+instance:
+  cluster_name: airoke
+  vm_name: "airoke 4.17.4"  
+  type: oke         
+  version: 4.17.4
+  imageset: stable-4.17 
+  arch: aarch64   
+  virtualization: UTM 
+  apple_hypervisor: qemu                 
+  cores: 8
+  memory_gb: 16
+  root_disk_gb: 200
+  pvc_disk_gb: 200   
+  subdomain: jowest       
+  hostedzone: icon-k8s.ico
+  hostedzone_id: Z04977272FB9P68H6O0NN 
+  cidr_length: 24             
+  icon: icon-rhlayers.ico   
+  clean_image: true
+  ssh_key_public_path: ~/.ssh/id_ed25519.pub
+  ssh_key_private_path: ~/.ssh/id_ed25519
+
+
+onepass_vault_item: sno-local-secrets
+
+ansible_user: core
+
+ssh_key_public: "{{ lookup('file', instance.ssh_key_public_path) }}"
+ssh_key_private: "{{ lookup('file', instance.ssh_key_private_path) }}"

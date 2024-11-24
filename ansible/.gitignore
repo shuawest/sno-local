@@ -12,6 +12,7 @@ collections
 # output temp files
 target
 
-# must gather
+# misc
 must-gather*
+.DS_Store
 
