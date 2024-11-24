@@ -16,7 +16,8 @@
       sno: "{{ cluster }}"
       route53_user_access_key_id: "{{ vault.route53_user_access_key_id }}"
       route53_user_secret_access_key: "{{ vault.route53_user_secret_access_key }}"
-
+      openshift_pull_secret: "{{ vault.openshift_pull_secret }}"
+      sno_ssh_key_public: "{{ ssh_key_public }}"
 
   # - name: Build a MicroShift cluster in MacOS on UTM
   #   when: cluster.type == 'microshift' and cluster.virtualization == 'UTM' 

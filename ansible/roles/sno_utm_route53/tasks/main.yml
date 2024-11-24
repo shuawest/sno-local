@@ -80,22 +80,22 @@
     route53_subdomain_user_secret: "{{ route53_user_secret_access_key }}"
     route53_subdomain_records:
       node_forward:
-        record: "node.{{ sno.cluster_name }}.{{ sno.base_domain }}"
+        record: "node.{{ sno.cluster_name }}.{{ sno.subdomain }}.{{ sno.hostedzone }}"
         value: "{{ utm_vm_ip_addr }}"
         zone: "{{ sno.hostedzone }}"
         type: A
       api:
-        record: "api.{{ sno.cluster_name }}.{{ sno.base_domain }}"
+        record: "api.{{ sno.cluster_name }}.{{ sno.subdomain }}.{{ sno.hostedzone }}"
         value: "{{ utm_vm_ip_addr }}"
         zone: "{{ sno.hostedzone }}"
         type: A
       apiint:
-        record: "api-int.{{ sno.cluster_name }}.{{ sno.base_domain }}"
+        record: "api-int.{{ sno.cluster_name }}.{{ sno.subdomain }}.{{ sno.hostedzone }}"
         value: "{{ utm_vm_ip_addr }}"
         zone: "{{ sno.hostedzone }}"
         type: A
       apps:
-        record: "*.apps.{{ sno.cluster_name }}.{{ sno.base_domain }}"
+        record: "*.apps.{{ sno.cluster_name }}.{{ sno.subdomain }}.{{ sno.hostedzone }}"
         value: "{{ utm_vm_ip_addr }}"
         zone: "{{ sno.hostedzone }}"
         type: A
@@ -106,7 +106,7 @@
     name: sno_agent
     tasks_from: clean.yml
   vars:
-    sno_base_domain: "{{ sno.base_domain }}"
+    sno_base_domain: "{{ sno.subdomain }}.{{ sno.hostedzone }}"
     sno_cluster_name: "{{ sno.cluster_name }}"
 
 - name: Generate SNO installer image
@@ -114,13 +114,13 @@
     name: sno_agent
     tasks_from: create_image.yml
   vars:
-    sno_base_domain: "{{ sno.base_domain }}"
+    sno_base_domain: "{{ sno.subdomain }}.{{ sno.hostedzone }}"
     sno_cluster_name: "{{ sno.cluster_name }}"
     sno_ip_addr: "{{ utm_vm_ip_addr }}"
     sno_mac_addr: "{{ utm_vm_mac_addr }}"
     sno_machine_cidr_length: "{{ sno.cidr_length }}"
-    sno_pull_secret: "{{ sno.pull_secret }}"
-    sno_ssh_key: "{{ sno.ssh_public_key }}"
+    sno_pull_secret: "{{ openshift_pull_secret }}"
+    sno_ssh_key: "{{ sno_ssh_key_public }}"
     sno_version: "{{ sno.version }}"
     sno_imageset_ref: "{{ sno.imageset }}"
     sno_arch: "{{ sno.arch }}"
@@ -146,7 +146,7 @@
     name: sno_agent
     tasks_from: install.yml
   vars:
-    sno_base_domain: "{{ sno.base_domain }}"
+    sno_base_domain: "{{ sno.subdomain }}.{{ sno.hostedzone }}"
     sno_cluster_name: "{{ sno.cluster_name }}"
     sno_ip_addr: "{{ utm_vm_ip_addr }}"
     sno_arch: "{{ sno.arch }}"

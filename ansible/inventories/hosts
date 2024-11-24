@@ -2,8 +2,9 @@
 [all]
 client   ansible_connection=local
 example  inventory_hostname=node.example.test.milabs.io
-snompro  inventory_hostname=node.snompro.jowest.milabs.io
-snomair  inventory_hostname=node.snomair.jowest.milabs.io
+
+airsno  inventory_hostname=node.airsno.jowest.milabs.io
+mbpsno  inventory_hostname=node.mbpsno.jowest.milabs.io
 
 [admin_vault]
 client

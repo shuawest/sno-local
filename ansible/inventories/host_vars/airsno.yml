@@ -28,5 +28,5 @@ onepass_vault_item: sno-local-secrets
 
 ansible_user: core
 
-ssh_key_public: "{{lookup('file', instance.ssh_key_public_path) }}"
-ssh_key_private: "{{lookup('file', instance.ssh_key_private_path) }}"
+ssh_key_public: "{{ lookup('file', instance.ssh_key_public_path) }}"
+ssh_key_private: "{{ lookup('file', instance.ssh_key_private_path) }}"
