@@ -52,19 +52,19 @@
       tasks_from: set_item.yml
     vars:
       category: server
-      section: "subdomain-{{ cluster.subdomain }}.{{ cluster.hostedzone }}"
+      section: "{{ onepass_cluster_section }}"
       name: "{{ onepass_cluster_item }}"
       fields:
-      - field: route53_subdomain_user
+      - field: "{{ onepass_route53_subdomain_user_field }}"
         value: "{{ route53_subdomain_user }}"
         type: text
-      - field: route53_subdomain_user_access_key
+      - field: "{{ onepass_route53_subdomain_access_key_field }}"
         value: "{{ route53_subdomain_user_access_key }}"
         type: text
-      - field: route53_subdomain_user_secret
+      - field: "{{ onepass_route53_subdomain_secret_field }}"
         value: "{{ route53_subdomain_user_secret }}"
         type: password
-      - field: route53_subdomain_user_arn
+      - field: "{{ onepass_route53_subdomain_user_arn }}"
         value: "{{ route53_subdomain_user_arn }}"
         type: text
 

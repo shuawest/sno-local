@@ -1,0 +1,50 @@
+---
+
+- name: Create 1Pasword Vault items for manual entry
+  hosts: client
+  gather_facts: no
+  tasks:
+
+  - name: Initialize 1Password with cluster login secret
+    when: onepass_enabled
+    ansible.builtin.include_role:
+      name: vault_utils_1password
+      tasks_from: set_item.yml
+    vars:
+      category: login
+      name: "Login {{ cluster_full_name }}"
+      fields:  
+      - field: "username"
+        value: "kubeadmin"
+        type: text
+      - field: "password"
+        value: "<not populated yet>"
+        type: password
+        prevent_overwrite: true
+      - field: "console"
+        value: "https://console-openshift-console.apps.{{ cluster_full_name }}/"
+        type: text
+      - field: "website"
+        value: "https://oauth-openshift.apps.{{ cluster_full_name }}/login"
+        type: text
+      - field: "API"
+        section: automation
+        value: "https://api.{{ cluster_full_name }}:6443"
+        type: text
+      - field: "IP"
+        section: automation
+        value: "<not populated yet>"
+        type: text
+        prevent_overwrite: true
+      - field: "ssh_key_public"
+        section: automation
+        value: "<not populated yet>"
+        type: text
+        prevent_overwrite: true
+      - field: "ssh_key_private"
+        section: automation
+        value: "<not populated yet>"
+        type: password
+        prevent_overwrite: true
+
+

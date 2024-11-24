@@ -20,13 +20,19 @@ vault_type: 1password
 onepass_enabled: "{{ vault_type == '1password' }}"
 onepass_account: my.1password.com
 onepass_vault: MILabs.io
+
 onepass_aws_admin_vault_item: aws-route53-admin
 onepass_aws_admin_access_key_field: route53_owner_access_key
 onepass_aws_admin_secret_field: route53_owner_secret
+
+onepass_route53_subdomain_user_field: route53_subdomain_user
 onepass_route53_subdomain_access_key_field: route53_subdomain_access_key
 onepass_route53_subdomain_secret_field: route53_subdomain_secret
+onepass_route53_subdomain_user_arn: route53_subdomain_user_arn
 
-onepass_pull_secret_item: 
+onepass_ssh_key_public_field: ssh_key_public
+onepass_ssh_key_private_field: ssh_key_private
+
 onepass_pull_secret_field: openshift_pull_secret_base64
 onepass_github_pat_field: github_pat
 
@@ -45,7 +51,12 @@ definition_name: instance
 
 # Get the cluster definition object from the host_vars file based on the cluster_name
 cluster: "{{ hostvars[ cluster_name ][ definition_name ] }}"
+cluster_full_name: "{{ cluster.cluster_name }}.{{ cluster.subdomain }}.{{ cluster.hostedzone }}"
 onepass_cluster_item: "{{ hostvars[ cluster_name ][ 'onepass_vault_item' ] }}"
+onepass_cluster_section: "subdomain-{{ cluster.subdomain }}.{{ cluster.hostedzone }}"
+
+ssh_key_public: "{{ hostvars[ cluster_name ][ 'ssh_key_public' ] }}"
+ssh_key_private: "{{ hostvars[ cluster_name ][ 'ssh_key_private' ] }}"
 
 
 # TODO: resolve this using ansible instead

@@ -1,0 +1,25 @@
+---
+
+- name: Update SSH key for cluster in 1Password
+  hosts: client
+  gather_facts: no
+  tasks:
+
+  - name: Set public and private SSH Key
+    when: onepass_enabled
+    ansible.builtin.include_role:
+      name: vault_utils_1password
+      tasks_from: set_item.yml
+    vars:
+      category: login
+      name: "Login {{ cluster_full_name }}"
+      fields:  
+      - field: "ssh_key_public"
+        section: automation
+        value: "{{ ssh_key_public }}"
+        type: text
+      - field: "ssh_key_private"
+        section: automation
+        value: "{{ ssh_key_private }}"
+        type: password
+

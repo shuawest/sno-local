@@ -19,10 +19,11 @@ instance:
   cidr_length: 24             
   icon: icon-rhlayers.ico   
   clean_image: true
-  ssh_public_key_path: ~/.ssh/id_rsa.pub
-  # pull_secret: "{{ vault.openshift_pull_secret }}"
+  ssh_key_public_path: ~/.ssh/id_ed25519.pub
+  ssh_key_private_path: ~/.ssh/id_ed25519
 
-ssh_public_key: "{{lookup('file', instance.ssh_public_key_path) }}"
+ssh_key_public: "{{lookup('file', instance.ssh_key_public_path) }}"
+ssh_key_private: "{{lookup('file', instance.ssh_key_private_path) }}"
 
 onepass_vault_item: sno-local-secrets
 

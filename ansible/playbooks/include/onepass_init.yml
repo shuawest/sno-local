@@ -60,7 +60,3 @@
         remove: true
 
 
-  # sno-local-secrets item
-  # - openshift pull secret
-  #   - instruct them to download pull-secret.txt 
-  #   - add set that  instructions for base64 encoding
