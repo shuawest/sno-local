@@ -3,12 +3,8 @@
 ###
 # Role arguments for setting secrets
 
-# Required for fetching a secret
+# Required for settings and fetching a secret
 name:             # Vault item name
-field:            # Field within the vault to update
-
-# Required for setting a secret, as weel as the above fields
-value:            # Value to set in the field
 
 # Optional for setting a secret
 section:          # Section of the item for the field
@@ -16,10 +12,10 @@ category: login   # Category of secret - login | server
 type: password    # password | txt
 
 # Set additional fields in item and section
-additonal_fields:           # Add additional fields to the secret, such as the website
-# - field: website
-#   type: text
-#   value: https://console-openshift-console.apps.csb.jowest.milabs.io/
+fields:           
+# - field:        # Field name in the vault item
+#   type: text    # Type of field - text | password | url 
+#   value:        # Value to set
 
 
 ###

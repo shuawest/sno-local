@@ -16,9 +16,8 @@
     vault_arg: "--vault='{{ onepass_vault }}'"
 
 - name: Form section CLI arg
-  when: section is defined and section != ""
   ansible.builtin.set_fact:
-    section_prefix: "{{ section }}."
+    section_prefix: "{{ section | default('') | replace('.', '-') }}."
 
 - name: Create 1Password vault if does not exist
   when: not vault_item_exists
@@ -27,16 +26,9 @@
         --title='{{ name }}' --category='{{ category | default('server') }}' \
         < /dev/null
 
-- name: Set field if 1Password item
-  ansible.builtin.shell: |
-    op item edit '{{ name }}' \
-    {{ section_prefix | default('') }}{{ field }}[{{ type | default('password') }}]='{{ value }}' \
-    < /dev/null
+- name: Set fields in the vault item
+  with_items: "{{ fields }}" 
+  loop_control:
+    loop_var: item_field
+  ansible.builtin.include_tasks: set_field.yml
 
-- name: Set additional fields if specified
-  with_items: "{{ additonal_fields }}" 
-  ansible.builtin.shell: |
-    op item edit '{{ name }}' \
-    {{ section_prefix | default('') }}{{ item.field }}[{{ item.type | default('password') }}]='{{ item.value }}' \
-     < /dev/null 
-    

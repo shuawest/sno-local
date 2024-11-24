@@ -1,7 +1,7 @@
 ---
 
 - name: Create Single-Node OpenShift UTM VM on CSB macbook
-  hosts: localhost
+  hosts: client
   gather_facts: no
   tasks:
 

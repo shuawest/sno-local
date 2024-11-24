@@ -52,20 +52,20 @@
       tasks_from: set_item.yml
     vars:
       category: server
-      section: "subdomain-{{ cluster.subdomain | replace('.','-') }}-{{ cluster.hostedzone | replace('.','-') }}"
-      name: "{{ onepass_aws_admin_vault_item }}"
-      field: route53_subdomain_user
-      type: text
-      value: "{{ route53_subdomain_user }}"
-    with_items:
+      section: "subdomain-{{ cluster.subdomain }}.{{ cluster.hostedzone }}"
+      name: "{{ onepass_cluster_item }}"
+      fields:
+      - field: route53_subdomain_user
+        value: "{{ route53_subdomain_user }}"
+        type: text
       - field: route53_subdomain_user_access_key
-        type: text
         value: "{{ route53_subdomain_user_access_key }}"
-      - field: route53_subdomain_user_secret
-        type: password
-        value: "{{ route53_subdomain_user_secret }}"
-      - field: route53_subdomain_user_arn
         type: text
+      - field: route53_subdomain_user_secret
+        value: "{{ route53_subdomain_user_secret }}"
+        type: password
+      - field: route53_subdomain_user_arn
         value: "{{ route53_subdomain_user_arn }}"
+        type: text
 
 

@@ -15,7 +15,7 @@
       category: login
       field: password
       value: my-kube-admin-pass
-      additonal_fields:
+      additional_fields:
         - field: username
           value: kubeadmin
           type: text
@@ -38,7 +38,7 @@
       value: sampleaccesskey
       type: text
       section: jowest-subdomain
-      additonal_fields:
+      additional_fields:
         - field: aws_admin_secret_access_key
           value: "my example secret key"
           type: password

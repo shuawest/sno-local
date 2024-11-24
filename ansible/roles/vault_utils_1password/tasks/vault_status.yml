@@ -3,7 +3,7 @@
 - name: Check if 1Password vault exists
   ignore_errors: true
   ansible.builtin.shell: 
-    op item get '{{ name }}' --fields '{{ field }}'
+    op item get '{{ name }}' 
   register: vault_item_exists_output
  
 - name: Determine status of the Vault Item from vault_exists_output
@@ -11,13 +11,7 @@
     vault_item_exists: "{{ 'an item. Specify the item with its UUID' not in vault_item_exists_output.stderr }}"
     vault_item_field_exists: false
 
-- name: Determine status of the Vault Item from vault_exists_output
-  when: vault_item_exists
-  ansible.builtin.set_fact:
-    vault_item_field_exists: "{{ 'a field in the' not in vault_item_exists_output.stderr }}"
-
 - name: Show status of the vault item
   ansible.builtin.debug:
     msg: 
     - "Vault item {{ name }} exists: {{ vault_item_exists }}"
-    - "Field {{ field }} exists: {{ vault_item_field_exists }}"

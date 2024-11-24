@@ -9,5 +9,3 @@ metadata:
 spec:
   finalizers:
   - kubernetes
-status:
-  phase: Active

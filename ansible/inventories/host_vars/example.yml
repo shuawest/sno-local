@@ -24,6 +24,9 @@ instance:
 
 ssh_public_key: "{{lookup('file', instance.ssh_public_key_path) }}"
 
+onepass_vault_item: sno-local-secrets
+
+
 vault_1password:
   item_name: test-secrets
   mapping:

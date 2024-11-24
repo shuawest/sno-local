@@ -1,0 +1,69 @@
+---
+
+- name: Create 1Pasword Vault items for manual entry
+  hosts: client
+  gather_facts: no
+  tasks:
+
+  # aws admin secrets item
+  - name: Create AWS Route53 Admin vault item
+    when: onepass_enabled
+    ansible.builtin.include_role:
+      name: vault_utils_1password
+      tasks_from: set_item.yml
+    vars:
+      category: server
+      name: "{{ onepass_aws_admin_vault_item }}"
+      fields:
+      - field: "{{ onepass_aws_admin_access_key_field }}"
+        value: "<get access key from aws.amazom.com>"
+        type: text
+        prevent_overwrite: true
+      - field: "{{ onepass_aws_admin_secret_field }}"
+        value: "<get secret key from aws.amazom.com>"
+        type: password
+        prevent_overwrite: true
+      - field: "URL"
+        remove: true
+      - field: "username"
+        remove: true
+      - field: "password"
+        remove: true
+      - section: "Admin Console"
+        remove: true
+      # - section: "Admin Console"
+      #   field: admin console URL
+      #   remove: true
+      # - section: "Admin Console"
+      #   field: admin console username
+      #   remove: true
+      # - section: "Admin Console"
+      #   field: console password
+      #   remove: true
+      - section: "Hosting Provider"
+        field: name
+        remove: true
+      - section: "Hosting Provider"
+        field: website
+        remove: true
+      - section: "Hosting Provider"
+        field: support URL
+        remove: true
+      - section: "Hosting Provider"
+        field: support phone
+        remove: true
+
+  - name: Update 1Password with subdomain user secrets
+    when: onepass_enabled
+    ansible.builtin.include_role:
+      name: vault_utils_1password
+      tasks_from: set_item.yml
+    vars:
+      category: server
+      name: "{{ onepass_cluster_item }}"
+      fields: []
+
+  # sno-local-secrets item
+  # - openshift pull secret
+  #   - instruct them to download pull-secret.txt 
+  #   - add set that  instructions for base64 encoding
