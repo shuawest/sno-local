@@ -31,26 +31,7 @@
         remove: true
       - section: "Admin Console"
         remove: true
-      # - section: "Admin Console"
-      #   field: admin console URL
-      #   remove: true
-      # - section: "Admin Console"
-      #   field: admin console username
-      #   remove: true
-      # - section: "Admin Console"
-      #   field: console password
-      #   remove: true
       - section: "Hosting Provider"
-        field: name
-        remove: true
-      - section: "Hosting Provider"
-        field: website
-        remove: true
-      - section: "Hosting Provider"
-        field: support URL
-        remove: true
-      - section: "Hosting Provider"
-        field: support phone
         remove: true
 
   - name: Update 1Password with subdomain user secrets

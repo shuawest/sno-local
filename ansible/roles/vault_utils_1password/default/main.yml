@@ -1,5 +1,8 @@
 --- 
 
+# 1Password documentation
+# https://developer.1password.com/docs/cli/item-fields/
+
 ###
 # Role arguments for setting secrets
 
@@ -7,15 +10,33 @@
 name:             # Vault item name
 
 # Optional for setting a secret
-section:          # Section of the item for the field
-category: login   # Category of secret - login | server  
+section:          # Section of the item for all the fields not explicitly set
+category: login   # Category of secret - login | server | etc 
 type: password    # password | txt
 
 # Set additional fields in item and section
-fields:           
+fields:      
+
+# Set field
+# - field: <field name/label>
+#   [section:] <optional - section of the field>
+#   type: <type of field - text | password | url>
+#   value: <value to set>
+
+# Set field defalt value, but don't overwrite
 # - field:        # Field name in the vault item
-#   type: text    # Type of field - text | password | url 
-#   value:        # Value to set
+#   type: text 
+#   value: <default value> 
+#   prevent_overwrite: true
+
+# Remove field
+# - field: <field label to delete>
+#   [section:] <optional - section of the field>
+#   remove: true
+
+# Remove section
+# - section: <section label to delete>
+#   remove: true
 
 
 ###
@@ -29,3 +50,5 @@ onepass_account: my.1password.com
 # - the vault is the group within 1Password where items are created and fetched
 onepass_vault: MILabs.io
 
+# print key facts per field 
+vault_utils_1password_debug: false

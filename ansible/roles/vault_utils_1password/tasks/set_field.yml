@@ -22,7 +22,8 @@
   ansible.builtin.set_fact:
     field_section_prefix: ""
 
-- debug: 
+- when: vault_utils_1password_debug
+  debug: 
     msg: 
     - "prevent_overwrite       {{ prevent_overwrite }}"
     - "remove                  {{ remove }}"
@@ -37,7 +38,7 @@
   ansible.builtin.include_tasks: field_status.yml
 
 - name: Set fields in the vault item
-  # no_log: true
+  no_log: true
   when: (not section_only) and (not remove) and ((not prevent_overwrite) or (not item_field_exists))
   ansible.builtin.shell: |
     op item edit '{{ name }}' \
@@ -83,22 +84,3 @@
     {{ account_arg | default('') }} {{ vault_arg | default('') }} \
     '{{ field_section_prefix }}{{ section_field.label }}[delete]' \
     < /dev/null 
-
-
-#sg: 'template error while templating string: unexpected '']'', expected '')''. String: {{ fetch_item_output_json.stdout | json | fields.community.general.json_query(''fields[?section.label==`'' + item_field.section + ''`''].label'') }}. unexpected '']'', expected '')'''
-
-# - when: section_only and remove 
-#   debug:
-#     msg: "{{ section_fields }}"
-
-
-# NOTE: to delete a section, we need to get the field names in a section, and delete each of them
-# - name: Remove section marked for deletion
-#   when: section_only and remove 
-#   ansible.builtin.shell: |
-#     op item edit '{{ name }}' \
-#     {{ account_arg | default('') }} {{ vault_arg | default('') }} \
-#     '{{ field_section_prefix }}[delete]' \
-#     < /dev/null 
-
-   
