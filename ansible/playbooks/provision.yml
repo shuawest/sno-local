@@ -10,7 +10,7 @@
 
 - name: Provision target cluster 
   hosts: client
-  gather_facts: no
+  gather_facts: yes
   tasks:
 
   - name: Provision a Single-Node OpenShift cluster in MacOS on UTM

@@ -1,0 +1,11 @@
+
+- name: Start a kickstart server
+  hosts: client
+  gather_facts: yes
+  tasks:
+
+  - name: Start the service
+    ansible.builtin.include_role:
+      name: kickstart_server
+
+

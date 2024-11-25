@@ -1,0 +1,33 @@
+---
+
+- name: Open firewall port on MacOS
+  when: ansible_os_family == 'Darwin'
+  ansible.builtin.shell: |
+    echo "TODO"
+
+- name: Create kickstarts directory
+  ansible.builtin.file:
+    path: "{{ staging_dir }}/kickstarts"
+    state: directory
+
+- name: Copy the kickstart files into the directory
+  ansible.builtin.copy:
+    src: "templates/{{ item }}"
+    dest: "{{ staging_dir }}/kickstarts/{{ item }}"
+    mode: 0664
+  with_items:
+  - kickstart1.ks
+  - kickstart2.ks
+  - index.html
+
+- name: Serve a HTTP server that mounts a directory with kickstart files
+  ansible.builtin.shell: |
+    podman run -d \
+      --name nginx-server \
+      -p 8080:80 \
+      -v {{ staging_dir }}/kickstarts:/usr/share/nginx/html:ro,Z \
+      nginx
+
+
+
+

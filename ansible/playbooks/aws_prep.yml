@@ -2,7 +2,7 @@
 
 - name: Configure AWS access account and credentials
   hosts: client
-  gather_facts: no
+  gather_facts: yes
   tasks:
 
   - name: Fetch secrets from 1Password

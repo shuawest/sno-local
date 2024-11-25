@@ -9,7 +9,7 @@
 
 - name: Provision image builder VM
   hosts: client
-  gather_facts: no
+  gather_facts: yes
   tasks:
 
   - name: Provision a RHEL image builder instance in UTM on MacOS

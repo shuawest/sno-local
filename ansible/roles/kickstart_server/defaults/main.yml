@@ -1,0 +1,7 @@
+---
+
+staging_dir: "{{ role_path }}/../../target"
+
+
+
+
