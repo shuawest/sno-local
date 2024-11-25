@@ -1,0 +1,52 @@
+---
+
+# https://docs.redhat.com/en/documentation/red_hat_build_of_microshift/4.12/html-single/installing/index#adding-microshift-repos-image-builder_microshift-embed-in-rpm-ostree
+# https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/composing_installing_and_managing_rhel_for_edge_images/setting-up-image-builder_composing-installing-managing-rhel-for-edge-images#edge-image-builder-system-requirements_setting-up-image-builder
+
+# OKE on Macbook Air with M3, 8 cores, 24GB RAM, 2TB SSD 
+instance:
+  cluster_name: airmshift
+  vm_name: "airmshift 4.17.4"  
+  type: microshift         
+  version: 4.17.4
+  imageset: microshift-4.17 
+  arch: aarch64   
+  virtualization: UTM 
+  apple_hypervisor: qemu                 
+  cores: 10
+  memory_gb: 18
+  root_disk_gb: 200
+  pvc_disk_gb: 200   
+  subdomain: jowest       
+  hostedzone: milabs.io
+  hostedzone_id: Z04977272FB9P68H6O0NN 
+  cidr_length: 24             
+  icon: icon-k8s.ico   
+  clean_image: true
+  ssh_key_public_path: ~/.ssh/id_ed25519.pub
+  ssh_key_private_path: ~/.ssh/id_ed25519
+
+image_builder:
+  instance_name: image_builder
+  vm_name: "image builder 8.7"
+  image_path: ~/dev/archives/rhel-8.7-aarch64-kvm.qcow2
+  rhel_version: 8.7
+  arch: aarch64
+  virtualization: UTM 
+  apple_hypervisor: qemu                
+  cores: 2
+  memory_gb: 4
+  root_disk_gb: 100          
+  icon: icon-redhat.ico 
+  ssh_key_public_path: ~/.ssh/id_ed25519.pub
+  ssh_key_private_path: ~/.ssh/id_ed25519
+
+
+
+
+onepass_vault_item: sno-local-secrets
+
+ansible_user: core
+
+ssh_key_public: "{{ lookup('file', instance.ssh_key_public_path) }}"
+ssh_key_private: "{{ lookup('file', instance.ssh_key_private_path) }}"

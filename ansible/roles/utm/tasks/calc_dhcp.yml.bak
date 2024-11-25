@@ -3,9 +3,9 @@
 - name: Calc network DHCP settings
   ansible.builtin.set_fact:
     cacheable: true
-    utm_guest_network: "{{ utm_ip_addr | ansible.utils.ipsubnet( utm_cidr_length ) }}"
-    utm_dhcp_start: "{{ utm_ip_addr | ansible.utils.ipmath(-1) }}"
-    utm_dhcp_end: "{{ utm_ip_addr | ansible.utils.ipmath(1) }}"
+    utm_guest_network: "{{ utm_vm_ip_addr | ansible.utils.ipsubnet( utm_cidr_length ) }}"
+    utm_dhcp_start: "{{ utm_vm_ip_addr | ansible.utils.ipmath(-1) }}"
+    utm_dhcp_end: "{{ utm_vm_ip_addr | ansible.utils.ipmath(1) }}"
 
 - name: Show UTM VM info
   debug:

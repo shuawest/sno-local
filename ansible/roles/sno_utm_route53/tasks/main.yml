@@ -155,6 +155,6 @@
 - name: Set facts for the record at playbook level
   ansible.builtin.set_fact:
     cacheable: true
-    instance_ip_addr: "{{ utm_ip_addr }}"
-    instance_mac_addr: "{{ utm_mac_addr }}"
-    instance_kubeadmin_pass: "{{ lookup('file', sno_agent_dir + '/auth/kubeadmin-password' + ) }}"
+    instance_ip_addr: "{{ utm_vm_ip_addr }}"
+    instance_mac_addr: "{{ utm_vm_mac_addr }}"
+    instance_kubeadmin_pass: "{{ lookup('file', sno_agent_dir + '/auth/kubeadmin-password' ) }}"

@@ -1,5 +1,9 @@
 ---
 
+- name: Init login secret in 1Password 
+  when: onepass_enabled
+  import_playbook: ./include/onepass_cluster_init.yml
+
 - name: Get secrets from 1Password 
   when: onepass_enabled
   import_playbook: ./include/vault-onepass.yml
@@ -10,7 +14,7 @@
   tasks:
 
   - name: Provision a Single-Node OpenShift cluster in MacOS on UTM
-    when: cluster.type == 'openshift' and cluster.virtualization == 'UTM'
+    when: cluster.type in  ('openshift','oke','ocp') and cluster.virtualization == 'UTM'
     ansible.builtin.include_role:
       name: sno_utm_route53
     vars:

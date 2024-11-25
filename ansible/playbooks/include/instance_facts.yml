@@ -5,7 +5,7 @@
   tasks:
 
   - name: Gather cluster variables to populate in 1Password
-    when: cluster.type == 'openshift' and cluster.virtualization == 'UTM'
+    when: cluster.type in ('openshift','oke','ocp') and cluster.virtualization == 'UTM'
     ansible.builtin.include_role:
       name: sno_utm_route53
       tasks_from: facts.yml

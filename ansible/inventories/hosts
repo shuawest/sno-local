@@ -5,6 +5,7 @@ example  inventory_hostname=node.example.test.milabs.io
 
 airsno  inventory_hostname=node.airsno.jowest.milabs.io
 airoke  inventory_hostname=node.airoke.jowest.milabs.io
+airoke2  inventory_hostname=node.airoke2.jowest.milabs.io
 
 mbpsno  inventory_hostname=node.mbpsno.jowest.milabs.io
 
