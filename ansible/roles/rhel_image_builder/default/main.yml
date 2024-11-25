@@ -1,2 +1,42 @@
 ---
 
+image_builder:
+  instance_name: image_builder
+  vm_name: "image builder 8.7"
+  image_path: ~/Downloads/rhel-8.7-aarch64-kvm.qcow2
+  dist: rhel
+  version: 8.7
+  arch: aarch64
+  virtualization: UTM 
+  apple_hypervisor: qemu                
+  cores: 2
+  memory_gb: 4
+  root_disk_gb: 100 
+  subdomain: jowest       
+  hostedzone: milabs.io
+  hostedzone_id: Z04977272FB9P68H6O0NN  
+  cidr_length: 24        
+  icon: icon-redhat.ico 
+  ssh_key_public_path: ~/.ssh/id_ed25519.pub
+  ssh_key_private_path: ~/.ssh/id_ed25519
+
+
+ssh_key_public: "{{ lookup('file', instance.ssh_key_public_path) }}"
+ssh_key_private: "{{ lookup('file', instance.ssh_key_private_path) }}"
+
+
+
+# virt-install
+#     --name <vm_name> \
+#     --autostart \
+#     --memory=<memory> \
+#     --cpu host \
+#     --vcpus=<vcpus> \
+#     --cdrom <agent_iso_image> \ 
+#     --disk pool=default,size=<disk_pool_size> \
+#     --network network:default,mac=<mac_address> \
+#     --graphics none \
+#     --noautoconsole \
+#     --os-variant rhel9.0 \
+#     --wait=-1
+

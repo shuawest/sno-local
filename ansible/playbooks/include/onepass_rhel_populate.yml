@@ -1,0 +1,47 @@
+---
+
+- name: Populate 1Pasword Vault items for RHEL instance with cockpit
+  hosts: client
+  gather_facts: no
+  tasks:
+
+  - name: Populate 1Password with RHEL login info
+    when: onepass_enabled
+    ansible.builtin.include_role:
+      name: vault_utils_1password
+      tasks_from: set_item.yml
+    vars:
+      category: login
+      name: "RHEL{{ rhel_instance.version }}-{{ rhel_instance.arch }} {{ rhel_fqdn }}"
+      fields:  
+      - field: "username"
+        value: "root"
+        type: text
+      - field: "password"
+        value: "{{ instance_kubeadmin }}"
+        type: password
+      - field: "website"
+        value: "https://{{ rhel_fqdn }}:9090"
+        type: text
+      - field: "dns"
+        section: automation
+        value: "{{ rhel_fqdn }}"
+        type: text
+      - field: "IP"
+        section: automation
+        value: "{{ instance_ip_addr }}"
+        type: text
+      - field: "MAC"
+        section: automation
+        value: "{{ instance_mac_addr }}"
+        type: text
+      - field: "ssh_key_public"
+        section: automation
+        value: "{{ ssh_key_public }}"
+        type: text
+      - field: "ssh_key_private"
+        section: automation
+        value: "{{ ssh_key_private }}"
+        type: password
+
+

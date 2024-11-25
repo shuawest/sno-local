@@ -1,0 +1,30 @@
+
+- name: Init login secret in 1Password 
+  when: onepass_enabled
+  import_playbook: ./include/onepass_rhel_init.yml
+
+- name: Get secrets from 1Password 
+  when: onepass_enabled
+  import_playbook: ./include/vault_rhel_onepass.yml
+
+- name: Provision image builder VM
+  hosts: client
+  gather_facts: no
+  tasks:
+
+  - name: Provision a RHEL image builder instance in UTM on MacOS
+    when: image_builder.virtualization == 'UTM'
+    ansible.builtin.include_role:
+      name: rhel_image_builder
+    vars:
+      image_builder: "{{ rhel_instance }}"
+      route53_user_access_key_id: "{{ vault.route53_user_access_key_id }}"
+      route53_user_secret_access_key: "{{ vault.route53_user_secret_access_key }}"
+      openshift_pull_secret: "{{ vault.openshift_pull_secret }}"
+      ssh_key_public: "{{ ssh_key_public }}"
+
+
+- name: Populate RHEL instance secrets into 1Password 
+  when: onepass_enabled
+  import_playbook: ./include/onepass_rhel_populate.yml
+

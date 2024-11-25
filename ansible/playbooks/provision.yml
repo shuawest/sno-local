@@ -6,7 +6,7 @@
 
 - name: Get secrets from 1Password 
   when: onepass_enabled
-  import_playbook: ./include/vault-onepass.yml
+  import_playbook: ./include/vault_cluster_onepass.yml
 
 - name: Provision target cluster 
   hosts: client

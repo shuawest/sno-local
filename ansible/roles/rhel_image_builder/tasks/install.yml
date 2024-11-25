@@ -1,17 +1,5 @@
 ---
 
-# https://www.opensourcerers.org/2023/11/20/kubernetes-at-the-edge-microshift-on-raspberry-pi-4-using-fedora-iot/
-# https://www.opensourcerers.org/2022/01/17/openshift-on-raspberry-pi-4/
-# https://medium.com/@ben.swinney_ce/openshift-raspberry-pi-2e78f2990395
-
-# need to serve the image on a web server accessible to the local network
-# a. Option 1: ownload the image and offer it up via podman from the macos host interface
-#    - this would require opening the firewall to allow access to network interface (8000?)
-#    https://www.youtube.com/watch?v=XNkIOYvCPWY
-# b. Option 2: Can image be served through cockpit on the Imager Builder host directly?
-#
-# macos
-# - firewall - https://rolfje.wordpress.com/2014/05/10/open-a-port-in-osx-mavericks-firewall/ 
 
 
 sudo subscription-manager repos

@@ -1,0 +1,23 @@
+---
+
+# these are run in the guest, not the MacOS host level
+
+- name: Make media mount directory
+  become: true
+  ansible.builtin.shell: |
+    mkdir /media/rosetta
+    mount -t virtiofs rosetta /media/rosetta
+
+- name: Put rosetta line item in /etc/fstab
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    line: rosetta	/media/rosetta	virtiofs	ro,nofail	0	0
+    create: yes
+
+- name: Register Rosetta as a x86_64 ELF handler
+  become: true
+  ansible.builtin.shell: |   
+    /usr/sbin/update-binfmts --install rosetta /media/rosetta/rosetta \
+     --magic "\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00" \
+     --mask "\xff\xff\xff\xff\xff\xfe\xfe\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff" \
+     --credentials yes --preserve yes --fix-binary yes

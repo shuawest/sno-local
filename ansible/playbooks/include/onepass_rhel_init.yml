@@ -1,0 +1,48 @@
+---
+
+- name: Initialize 1Pasword Vault items for RHEL instance with cockpit
+  hosts: client
+  gather_facts: no
+  tasks:
+
+  - name: Initialize 1Password with RHEL login info
+    when: onepass_enabled
+    ansible.builtin.include_role:
+      name: vault_utils_1password
+      tasks_from: set_item.yml
+    vars:
+      category: login
+      name: "RHEL{{ rhel_instance.version }}-{{ rhel_instance.arch }} {{ rhel_fqdn }}"
+      fields:  
+      - field: "username"
+        value: "root"
+        type: text
+      - field: "password"
+        value: "<not set yet>"
+        type: password
+        prevent_overwrite: true
+      - field: "website"
+        value: "https://{{ rhel_fqdn }}:9090"
+        type: text
+      - field: "dns"
+        section: host
+        value: "{{ rhel_fqdn }}"
+        type: text
+      - field: "IP"
+        section: host
+        value: "<not set yet>"
+        type: text
+      - field: "MAC"
+        section: host
+        value: "<not set yet>"
+        type: text
+      - field: "ssh_key_public"
+        section: host
+        value: "<not set yet>"
+        type: text
+      - field: "ssh_key_private"
+        section: host
+        value: "<not set yet>"
+        type: password
+      
+

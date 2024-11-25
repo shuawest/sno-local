@@ -55,6 +55,10 @@ cluster_full_name: "{{ cluster.cluster_name }}.{{ cluster.subdomain }}.{{ cluste
 onepass_cluster_item: "{{ hostvars[ cluster_name ][ 'onepass_vault_item' ] }}"
 onepass_cluster_section: "subdomain-{{ cluster.subdomain }}.{{ cluster.hostedzone }}"
 
+rhel_instance_var_name: rhel_instance
+rhel_instance: "{{ hostvars[ cluster_name ][ rhel_instance_var_name ] }}"
+rhel_fqdn: "{{ rhel_instance.instance_name }}.{{ rhel_instance.subdomain }}.{{ rhel_instance.hostedzone }}"
+
 ssh_key_public: "{{ hostvars[ cluster_name ][ 'ssh_key_public' ] }}"
 ssh_key_private: "{{ hostvars[ cluster_name ][ 'ssh_key_private' ] }}"
 

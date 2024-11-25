@@ -9,7 +9,8 @@ utm_vm_cores: 6
 utm_vm_memory: 4096
 utm_disk_primary_size_gb: 100
 utm_disk_primary_size: "{{ utm_disk_primary_size_gb | int * 1024 }}"
-utm_disk_secondary_size_gb: 200
+utm_disk_secondary_enabled: true
+utm_disk_secondary_size_gb: 100
 utm_disk_secondary_size: "{{ utm_disk_secondary_size_gb | int * 1024 }}"
 
 utm_boot_iso: 

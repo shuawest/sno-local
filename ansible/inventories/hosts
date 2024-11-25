@@ -1,13 +1,15 @@
 
 [all]
-client   ansible_connection=local
-example  inventory_hostname=node.example.test.milabs.io
+client      ansible_connection=local
+example     inventory_hostname=node.example.test.milabs.io
 
-airsno  inventory_hostname=node.airsno.jowest.milabs.io
-airoke  inventory_hostname=node.airoke.jowest.milabs.io
-airoke2  inventory_hostname=node.airoke2.jowest.milabs.io
+airsno      inventory_hostname=node.airsno.jowest.milabs.io
+airoke      inventory_hostname=node.airoke.jowest.milabs.io
+airoke2     inventory_hostname=node.airoke2.jowest.milabs.io
+airmshift   inventory_hostname=node.airmshift.jowest.milabs.io
 
-mbpsno  inventory_hostname=node.mbpsno.jowest.milabs.io
+
+mbpsno      inventory_hostname=node.mbpsno.jowest.milabs.io
 
 [admin_vault]
 client

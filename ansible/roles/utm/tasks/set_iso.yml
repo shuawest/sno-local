@@ -1,13 +1,21 @@
 ---
 
+- when: not utm_disk_secondary_enabled 
+  ansible.builtin.set_fact:
+    disk_count: 2
+
+- when: utm_disk_secondary_enabled
+  ansible.builtin.set_fact:
+    disk_count: 3
+
 - name: Set ISO file for VM
   ansible.builtin.shell: |
     osascript -e 'tell application "UTM"
       set iso to POSIX file "{{ utm_boot_iso }}"
       set vm to virtual machine named "{{ utm_vm_name }}"
       set config to configuration of vm
-      set i to id of item 3 of drives of config
-      set item 3 of drives of config to { removable: true, source:iso, guest size:65536 }
+      set i to id of item {{ disk_count }} of drives of config
+      set item {{ disk_count }} of drives of config to { removable: true, source:iso, guest size:65536 }
       update configuration of vm with config
     end tell'
 

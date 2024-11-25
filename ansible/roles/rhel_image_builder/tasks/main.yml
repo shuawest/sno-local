@@ -1,57 +1,73 @@
 ---
 
-# https://www.opensourcerers.org/2023/11/20/kubernetes-at-the-edge-microshift-on-raspberry-pi-4-using-fedora-iot/
-# https://www.opensourcerers.org/2022/01/17/openshift-on-raspberry-pi-4/
-# https://medium.com/@ben.swinney_ce/openshift-raspberry-pi-2e78f2990395
+- name: Check that the install image iso exists
+  stat:
+    path: "{{ image_builder.image_path }}"
+  register: image_exists_stat
 
-# need to serve the image on a web server accessible to the local network
-# a. Option 1: ownload the image and offer it up via podman from the macos host interface
-#    - this would require opening the firewall to allow access to network interface (8000?)
-#    https://www.youtube.com/watch?v=XNkIOYvCPWY
-# b. Option 2: Can image be served through cockpit on the Imager Builder host directly?
+- name: Assert that the install image iso exists
+  ansible.builtin.assert:
+    that: image_exists_stat.stat.exists
+    fail_msg: "RHEL ISO does not exist: {{ image_builder.image_path }}"
 
-sudo subscription-manager repos
-    --enable rhocp-4.12-for-rhel-8-$(uname -i)-rpms
-    --enable fast-datapath-for-rhel-8-$(uname -i)-rpms
 
-sudo yum install -y yum-utils createrepo
+- name: Create UTM VM for Image Builder
+  ansible.builtin.include_role:
+    name: utm
+    tasks_from: create.yml
+  vars:
+    utm_clean_vm: true
+    utm_vm_name: "{{ image_builder.vm_name }}"
+    utm_boot_iso: "{{ image_builder.image_path }}"
+    utm_vm_cores: "{{ image_builder.cores }}"
+    utm_vm_memory: "{{ image_builder.memory_gb | int * 1024 }}"
+    utm_cidr_length: "{{ image_builder.cidr_length }}"
+    utm_icon: "{{ image_builder.icon }}"
+    utm_backend: "{{ image_builder.apple_hypervisor | upper }}"
+    utm_vm_arch: "{{ image_builder.arch }}"
+    utm_disk_primary_size_gb: "{{ image_builder.root_disk_gb }}"
+    utm_disk_secondary_enabled: false
+    utm_qemu_debug_log: true
 
-sudo reposync --arch=$(uname -i) --arch=noarch --gpgcheck \
-    --download-path /var/repos/microshift-local \
-    --repo=rhocp-4.12-for-rhel-8-$(uname -i)-rpms \
-    --repo=fast-datapath-for-rhel-8-$(uname -i)-rpms
 
-sudo find ${REPO_PATH}/microshift-local -name \*coreos\* -exec rm -f {} \;
+- name: "Set the boot ISO for the VM: {{ image_builder.image_path }}"
+  ansible.builtin.include_role:
+    name: utm
+    tasks_from: set_iso.yml
+  vars:
+    utm_vm_name: "{{ image_builder.vm_name }}"
+    utm_boot_iso: "{{ image_builder.image_path }}"
+    utm_disk_secondary_enabled: false
 
-sudo createrepo ${REPO_PATH}/microshift-local
+- name: Start the VM 
+  ansible.builtin.include_role:
+    name: utm
+    tasks_from: start_vm.yml
+  vars:
+    utm_vm_name: "{{ image_builder.vm_name }}"
+    utm_start_seconds: 20
 
-sudo tee ${REPO_PATH}/microshift-local/microshift.toml > /dev/null <<EOF
-id = "microshift-local"
-name = "MicroShift local repo"
-type = "yum-baseurl"
-url = "file:///${REPO_PATH}/microshift-local/"
-check_gpg = false
-check_ssl = false
-system = false
-EOF
+- name: Show MAC and IP address
+  debug:
+    msg:  
+    - "IP: {{ utm_vm_ip_addr }}, MAC: {{ utm_vm_mac_addr }}"    
 
-sudo composer-cli sources add ${REPO_PATH}/microshift-local/microshift.toml
+- name: Put Route53 DNS update
+  ansible.builtin.include_role:
+    name: route53_subdomain
+  vars:
+    route53_register_wait: no
+    route53_subdomain_action: create
+    route53_subdomain_user_access_key: "{{ route53_user_access_key_id }}"
+    route53_subdomain_user_secret: "{{ route53_user_secret_access_key }}"
+    route53_subdomain_records:
+      node_forward:
+        record: "{{ rhel_fqdn }}"
+        value: "{{ utm_vm_ip_addr }}"
+        zone: "{{ image_builder.hostedzone }}"
+        type: A
 
-```
-name = "minimal-microshift"
 
-description = ""
-version = "0.0.1"
-modules = []
-groups = []
-
-[[packages]]
-name = "microshift"
-version = "4.12.0-1"
-
-[customizations.services]
-enabled = ["microshift"]
-```
 
 
 

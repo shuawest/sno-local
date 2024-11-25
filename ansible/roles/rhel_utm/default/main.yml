@@ -1,15 +1,21 @@
 ---
 
-os_base_domain:
-os_instance_name:
-os_ip_addr:
-os_mac_addr: 
-os_ssh_key:
+image_builder:
+  instance_name: image_builder
+  vm_name: "image builder 8.7"
+  image_path: ~/Downloads/rhel-8.7-aarch64-kvm.qcow2
+  dist: rhel
+  version: 8.7
+  arch: aarch64
+  virtualization: UTM 
+  apple_hypervisor: qemu                
+  cores: 2
+  memory_gb: 4
+  root_disk_gb: 100          
+  icon: icon-redhat.ico 
+  ssh_key_public_path: ~/.ssh/id_ed25519.pub
+  ssh_key_private_path: ~/.ssh/id_ed25519
 
-os_dist: rhel
-os_version: 8.7
-os_install_method: qcow2        # iso | qcow2
-os_arch: aarch64                # aarch64 | x86_64
 
 os_root_device: /dev/vda
 os_net_interface: enp0s1
@@ -29,3 +35,4 @@ os_net_interface: enp0s1
 #     --noautoconsole \
 #     --os-variant rhel9.0 \
 #     --wait=-1
+

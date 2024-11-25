@@ -1,0 +1,19 @@
+---
+
+- name: Fetch secrets for the target RHEL instance from 1Password
+  hosts: client
+  gather_facts: no
+  tasks:
+
+  - ansible.builtin.set_fact:
+      onepass_login_item_name: "RHEL{{ rhel_instance.version }}-{{ rhel_instance.arch }} {{ rhel_fqdn }}"
+
+  - name: Fetch secrets
+    ansible.builtin.set_fact:
+      cacheable: true
+      vault:
+        route53_subdomain_user: "{{ lookup('community.general.onepassword', onepass_cluster_item, field=onepass_route53_subdomain_user_field, section=onepass_cluster_section) }}"
+        route53_user_access_key_id: "{{ lookup('community.general.onepassword', onepass_cluster_item, field=onepass_aws_admin_access_key_field, section=onepass_cluster_section) }}"
+        route53_user_secret_access_key: "{{ lookup('community.general.onepassword', onepass_cluster_item, field=onepass_aws_admin_secret_field, section=onepass_cluster_section) }}"
+        route53_subdomain_user_arn: "{{ lookup('community.general.onepassword', onepass_cluster_item, field=onepass_route53_subdomain_user_arn, section=onepass_cluster_section) }}"
+     
